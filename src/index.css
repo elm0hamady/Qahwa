@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme {
+  /* Surfaces — light, airy, a little lavender warmth instead of stark white */
+  --color-bg: #fdfcff;
+  --color-bg-soft: #f5f1ff;
+  --color-surface: #ffffff;
+  --color-surface-hi: #f3edff;
+  --color-border: #e6dbff;
+  --color-border-soft: #f0e9ff;
+
+  /* Ink — deep plum-navy instead of pure black, keeps some personality */
+  --color-ink: #332b4d;
+  --color-ink-dim: #6b6285;
+  --color-ink-mute: #9a92b3;
+
+  /* Player / accent duality */
+  --color-purple: #8b5cf6;
+  --color-purple-soft: #a78bfa;
+  --color-purple-dim: #ede4ff;
+  --color-orange: #fb923c;
+  --color-orange-soft: #fdba74;
+  --color-orange-dim: #ffedd9;
+
+  --color-danger: #ef4444;
+  --color-success: #22c55e;
+
+  --font-display: "Baloo Bhaijaan 2", "Cairo", "Tahoma", sans-serif;
+  --font-sans: "Tajawal", "Tahoma", sans-serif;
+
+  --radius-token: 999px;
+  --radius-card: 1.75rem;
+  --radius-sm: 1rem;
+
+  --shadow-glow-purple: 0 10px 24px -6px rgba(139, 92, 246, 0.45);
+  --shadow-glow-orange: 0 10px 24px -6px rgba(251, 146, 60, 0.45);
+  --shadow-card: 0 12px 30px -12px rgba(139, 92, 246, 0.22);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    background-image:
+      radial-gradient(ellipse 800px 460px at 8% -8%, rgba(139, 92, 246, 0.14), transparent 60%),
+      radial-gradient(ellipse 720px 420px at 95% 6%, rgba(251, 146, 60, 0.12), transparent 55%),
+      radial-gradient(ellipse 600px 400px at 50% 105%, rgba(139, 92, 246, 0.08), transparent 60%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: 0;
+  }
+
+  ::selection {
+    background: var(--color-purple-dim);
+    color: var(--color-purple);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-purple);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg-soft);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 999px;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

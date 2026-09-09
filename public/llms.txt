@@ -1,0 +1,20 @@
+# Qahwa
+
+> Qahwa is a host-controlled trivia duel app. A host signs in, picks four topics
+> from a question bank, names two players, and runs a live head-to-head quiz
+> board — opening questions, judging winners, and adjusting scores in real time.
+
+## Key pages
+
+- Landing page (/): product overview and entry point to sign in.
+- Login (/login): the only account-entry route — there is no self-serve
+  registration; host accounts are provisioned by an administrator.
+- Dashboard (/dashboard), New game (/games/new), and the live game board
+  (/games/{sessionId}) are authenticated, per-host pages and are not meant to
+  be indexed or crawled — see /robots.txt.
+
+## Notes for automated agents
+
+- This is a client-rendered single-page app (React + Vite). Content behind
+  authenticated routes is not accessible without a valid host session.
+- The public marketing content lives entirely on the landing page.
