@@ -10,7 +10,6 @@ import { ErrorState } from "@/components/common/ErrorState";
 import { Seo } from "@/components/common/Seo";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { Modal } from "@/components/ui/Modal";
-import { TokenChip } from "@/components/ui/TokenChip";
 import { TopicCard } from "@/features/game/TopicCard";
 import { DEFAULT_TIMER_SECONDS, TIMER_SECONDS_BY_DIFFICULTY } from "@/features/game/timerConfig";
 import { resolveMediaUrl } from "@/lib/apiClient";
@@ -28,13 +27,10 @@ import { normalizeError } from "@/lib/errors";
 import { cn } from "@/lib/cn";
 import { InlineBanner } from "@/components/common/InlineBanner";
 
-const DIFFICULTIES = [100, 300, 500] as const;
-
 export function GamePage() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
   const [activeQuestion, setActiveQuestion] = useState<SessionQuestion | null>(null);
-  const [activeTopicName, setActiveTopicName] = useState<string | null>(null);
   const [celebration, setCelebration] = useState<number | null>(null);
 
   useEffect(() => {
@@ -102,7 +98,6 @@ export function GamePage() {
     // reopen anything on click.
     if (question.state !== "locked") return;
 
-    setActiveTopicName(null); // close the topic's token list, the question modal takes over
     // Open the modal immediately in a loading state — we don't have the
     // real question text yet (the server withholds it until now on
     // purpose), but the user should see *something* happen instantly
@@ -217,39 +212,25 @@ export function GamePage() {
         />
       </div>
 
-      {/* Board — a gallery of topics; open one to see its tokens */}
-      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {session.topics.map((topic, i) => {
-          const topicQuestions = DIFFICULTIES.flatMap((difficulty) => [
-            cellMap.get(`${topic.name}::${difficulty}::${player1.id}`),
-            cellMap.get(`${topic.name}::${difficulty}::${player2.id}`),
-          ]);
-          return (
-            <motion.div
-              key={topic.id}
-              initial={{ opacity: 0, y: 20, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 24, delay: i * 0.06 }}
-            >
-              <TopicCard
-                topicName={topic.name}
-                questions={topicQuestions}
-                playerIds={[player1.id, player2.id]}
-                onClick={() => setActiveTopicName(topic.name)}
-              />
-            </motion.div>
-          );
-        })}
+      {/* Board — each topic card shows its own tokens directly, no extra click needed */}
+      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {session.topics.map((topic, i) => (
+          <motion.div
+            key={topic.id}
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 24, delay: i * 0.06 }}
+          >
+            <TopicCard
+              topicName={topic.name}
+              players={[player1, player2]}
+              cellMap={cellMap}
+              onSelectQuestion={handleChipClick}
+              openPending={openMutation.isPending}
+            />
+          </motion.div>
+        ))}
       </div>
-
-      <TopicTokensModal
-        topicName={displayedQuestion ? null : activeTopicName}
-        onClose={() => setActiveTopicName(null)}
-        cellMap={cellMap}
-        players={[player1, player2]}
-        onSelectQuestion={handleChipClick}
-        openPending={openMutation.isPending}
-      />
 
       <QuestionModal
         question={displayedQuestion}
@@ -397,11 +378,17 @@ function ScoreCard({
 function MediaPreview({ media }: { media: NonNullable<SessionQuestion["media"]> }) {
   const url = resolveMediaUrl(media.url);
   if (media.type === "image") {
-    return <img src={url} alt="وسائط السؤال" className="mt-3 max-h-64 w-full rounded-xl object-cover" />;
+    return (
+      <img
+        src={url}
+        alt="وسائط السؤال"
+        className="mt-3 max-h-[70vh] w-full rounded-xl object-contain"
+      />
+    );
   }
   if (media.type === "video") {
     return (
-      <video controls className="mt-3 max-h-64 w-full rounded-xl">
+      <video controls className="mt-3 max-h-[70vh] w-full rounded-xl">
         <source src={url} />
       </video>
     );
@@ -411,76 +398,6 @@ function MediaPreview({ media }: { media: NonNullable<SessionQuestion["media"]> 
       <Music size={16} />
       <audio controls src={url} className="w-full" />
     </div>
-  );
-}
-
-function TopicTokensModal({
-  topicName,
-  onClose,
-  cellMap,
-  players,
-  onSelectQuestion,
-  openPending,
-}: {
-  topicName: string | null;
-  onClose: () => void;
-  cellMap: Map<string, SessionQuestion>;
-  players: [{ id: number; name: string }, { id: number; name: string }];
-  onSelectQuestion: (question: SessionQuestion | undefined) => void;
-  openPending: boolean;
-}) {
-  return (
-    <Modal open={Boolean(topicName)} onClose={onClose} title={topicName ?? undefined}>
-      {topicName && (
-        <div className="flex flex-col gap-4">
-          {DIFFICULTIES.map((difficulty) => {
-            const q1 = cellMap.get(`${topicName}::${difficulty}::${players[0].id}`);
-            const q2 = cellMap.get(`${topicName}::${difficulty}::${players[1].id}`);
-            return (
-              <div key={difficulty} className="flex items-center justify-between">
-                <span className="text-xs font-semibold tracking-wide text-ink-mute">
-                  {difficulty === 100 ? "سهل" : difficulty === 300 ? "متوسط" : "صعب"} · {difficulty} نقطة
-                </span>
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => onSelectQuestion(q1)}
-                    aria-label={`${topicName} ${difficulty} لـ ${players[0].name}`}
-                    disabled={openPending || (q1?.state ?? "locked") !== "locked"}
-                    className="disabled:cursor-not-allowed"
-                  >
-                    <TokenChip
-                      value={difficulty}
-                      player={1}
-                      state={q1?.state ?? "locked"}
-                      interactive={!openPending && (q1?.state ?? "locked") === "locked"}
-                    />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onSelectQuestion(q2)}
-                    aria-label={`${topicName} ${difficulty} لـ ${players[1].name}`}
-                    disabled={openPending || (q2?.state ?? "locked") !== "locked"}
-                    className="disabled:cursor-not-allowed"
-                  >
-                    <TokenChip
-                      value={difficulty}
-                      player={2}
-                      state={q2?.state ?? "locked"}
-                      interactive={!openPending && (q2?.state ?? "locked") === "locked"}
-                    />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-          <p className="text-xs text-ink-mute">
-            <span className="me-1 inline-block h-2 w-2 rounded-full border border-purple align-middle" /> {players[0].name}
-            <span className="mx-2 inline-block h-2 w-2 rounded-full border border-orange align-middle" /> {players[1].name}
-          </p>
-        </div>
-      )}
-    </Modal>
   );
 }
 
@@ -504,6 +421,7 @@ function QuestionModal({
       open={Boolean(question)}
       onClose={onClose}
       title={`${question.topic} · ${question.difficulity} نقطة`}
+      maxWidthClassName="max-w-3xl"
       // Once a question is on screen it has to be judged before the modal
       // can close — no X, no backdrop click, no Escape. Otherwise a host
       // could open it, back out, let someone look the answer up, and come

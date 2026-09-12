@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Logo } from "@/components/ui/Logo";
 
 const RING_ITEMS = [
   { value: 100, angle: 0, tone: "purple" },
@@ -55,7 +56,7 @@ export function HeroVisual() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="relative flex h-32 w-32 items-center justify-center rounded-full border-2 border-purple/60 bg-surface/80 backdrop-blur-sm shadow-card sm:h-40 sm:w-40"
       >
-        <span className="font-display text-4xl font-semibold text-purple sm:text-5xl">Q</span>
+        <Logo className="h-20 w-20 sm:h-24 sm:w-24" />
       </motion.div>
     </div>
   );

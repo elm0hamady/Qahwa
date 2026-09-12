@@ -12,6 +12,7 @@ const VerifyEmailPage = lazy(() =>
   import("@/pages/VerifyEmailPage").then((m) => ({ default: m.VerifyEmailPage }))
 );
 const DashboardPage = lazy(() => import("@/pages/DashboardPage").then((m) => ({ default: m.DashboardPage })));
+const TopicsPage = lazy(() => import("@/pages/TopicsPage").then((m) => ({ default: m.TopicsPage })));
 const NewGamePage = lazy(() => import("@/pages/NewGamePage").then((m) => ({ default: m.NewGamePage })));
 const GamePage = lazy(() => import("@/pages/GamePage").then((m) => ({ default: m.GamePage })));
 const ResultsPage = lazy(() => import("@/pages/ResultsPage").then((m) => ({ default: m.ResultsPage })));
@@ -38,6 +39,7 @@ export function App() {
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/topics" element={<TopicsPage />} />
                 <Route path="/games/new" element={<NewGamePage />} />
                 <Route path="/games/:sessionId" element={<GamePage />} />
                 <Route path="/games/:sessionId/results" element={<ResultsPage />} />

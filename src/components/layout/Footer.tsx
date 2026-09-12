@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { Coffee, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon, InstagramIcon, FacebookIcon } from "@/components/ui/BrandIcons";
+import { Logo } from "@/components/ui/Logo";
 
 const SOCIAL_LINKS = [
   { label: "GitHub", href: "https://github.com/elm0hamady/", icon: GithubIcon },
@@ -16,7 +17,7 @@ export function Footer() {
       <div className="flex flex-col gap-6 px-6 py-10 sm:flex-row sm:items-center sm:justify-between md:px-10 lg:px-16">
         <div className="flex flex-col gap-3">
           <Link to="/" className="flex items-center gap-2 text-ink-dim">
-            <Coffee size={16} className="text-purple" />
+            <Logo className="h-5 w-5" />
             <span className="font-display text-base">قهوة</span>
             <span className="text-sm text-ink-mute">— مبارزات أسئلة، تستضيفها إنت.</span>
           </Link>

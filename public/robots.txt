@@ -3,6 +3,7 @@ Allow: /
 Allow: /login
 Allow: /register
 Disallow: /dashboard
+Disallow: /topics
 Disallow: /games/
 Disallow: /verify-email/
 

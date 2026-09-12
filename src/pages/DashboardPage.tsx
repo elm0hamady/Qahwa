@@ -101,6 +101,12 @@ export function DashboardPage() {
             </Link>
           </Card>
         )}
+
+        <div className="mt-6 text-center">
+          <Link to="/topics" className="text-sm font-medium text-ink-mute transition-colors hover:text-purple">
+            تصفح بنك المواضيع
+          </Link>
+        </div>
       </div>
     </PageContainer>
   );

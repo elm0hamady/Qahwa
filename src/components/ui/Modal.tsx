@@ -10,6 +10,8 @@ interface ModalProps {
   title?: string;
   children: ReactNode;
   className?: string;
+  /** Overrides the default max-width (max-w-lg) — pass e.g. "max-w-3xl" for content-heavy modals like question media. */
+  maxWidthClassName?: string;
   /**
    * When false, the modal can't be dismissed via the X button, the
    * backdrop, or Escape — only by calling onClose() programmatically.
@@ -19,7 +21,15 @@ interface ModalProps {
   dismissible?: boolean;
 }
 
-export function Modal({ open, onClose, title, children, className, dismissible = true }: ModalProps) {
+export function Modal({
+  open,
+  onClose,
+  title,
+  children,
+  className,
+  maxWidthClassName = "max-w-lg",
+  dismissible = true,
+}: ModalProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -59,7 +69,8 @@ export function Modal({ open, onClose, title, children, className, dismissible =
             exit={{ opacity: 0, y: 16, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 340, damping: 26 }}
             className={cn(
-              "relative z-10 w-full max-w-lg rounded-card border-2 border-border bg-surface p-6 shadow-card",
+              "relative z-10 max-h-[90vh] w-full overflow-y-auto rounded-card border-2 border-border bg-surface p-6 shadow-card",
+              maxWidthClassName,
               className
             )}
           >

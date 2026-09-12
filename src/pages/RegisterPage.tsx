@@ -3,7 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Coffee, MailCheck } from "lucide-react";
+import { MailCheck } from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -83,9 +84,7 @@ export function RegisterPage() {
           className="relative w-full max-w-md rounded-card border-2 border-border bg-surface p-8 shadow-card"
         >
           <div className="mb-6 flex flex-col items-center gap-2 text-center">
-            <span className="flex h-11 w-11 items-center justify-center rounded-token border-2 border-purple text-purple">
-              <Coffee size={20} />
-            </span>
+            <Logo className="h-14 w-14" />
             <h1 className="font-display text-2xl font-bold text-ink">اعمل حساب مضيف</h1>
             <p className="text-sm text-ink-mute">هتقدر تستضيف مبارزات أسئلة بعد ما تفعّل إيميلك.</p>
           </div>

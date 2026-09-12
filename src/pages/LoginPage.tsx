@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Coffee } from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { InlineBanner } from "@/components/common/InlineBanner";
@@ -61,9 +61,7 @@ export function LoginPage() {
         className="relative w-full max-w-sm rounded-card border border-border bg-surface/80 p-8 shadow-card backdrop-blur-md"
       >
         <div className="mb-6 flex flex-col items-center gap-2 text-center">
-          <span className="flex h-11 w-11 items-center justify-center rounded-token border-2 border-purple text-purple">
-            <Coffee size={20} />
-          </span>
+          <Logo className="h-14 w-14" />
           <h1 className="font-display text-2xl font-semibold text-ink">تسجيل دخول المضيف</h1>
           <p className="text-sm text-ink-mute">استخدم حساب المضيف اللي اتعمل لطاولتك في قهوة.</p>
         </div>
