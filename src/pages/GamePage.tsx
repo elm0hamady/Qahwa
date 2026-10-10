@@ -245,7 +245,7 @@ export function GamePage() {
       )}
 
       <section aria-label="اختيار الأسئلة حسب الموضوع" className="min-w-0 px-[clamp(1rem,3vw,3rem)] py-4 sm:py-5">
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 2xl:grid-cols-3">
+        <div className="grid auto-rows-fr grid-cols-2 gap-3">
           {session.topics.map((topic, i) => (
             <motion.div
               key={topic.id}
