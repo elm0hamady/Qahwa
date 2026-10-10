@@ -30,6 +30,27 @@
   --font-display: "Baloo Bhaijaan 2", "Cairo", "Tahoma", sans-serif;
   --font-sans: "Tajawal", "Tahoma", sans-serif;
 
+  --text-lg: 1.0625rem;
+  --text-lg--line-height: 1.625rem;
+  --text-xl: 1.1875rem;
+  --text-xl--line-height: 1.6875rem;
+  --text-2xl: 1.375rem;
+  --text-2xl--line-height: 1.875rem;
+  --text-3xl: 1.6875rem;
+  --text-3xl--line-height: 2rem;
+  --text-4xl: 2.025rem;
+  --text-4xl--line-height: 2.375rem;
+  --text-5xl: 2.7rem;
+  --text-5xl--line-height: 1;
+  --text-6xl: 3.375rem;
+  --text-6xl--line-height: 1;
+  --text-7xl: 4.05rem;
+  --text-7xl--line-height: 1;
+  --text-8xl: 5.4rem;
+  --text-8xl--line-height: 1;
+  --text-9xl: 7.2rem;
+  --text-9xl--line-height: 1;
+
   --radius-token: 999px;
   --radius-card: 1.25rem;
   --radius-sm: 0.875rem;

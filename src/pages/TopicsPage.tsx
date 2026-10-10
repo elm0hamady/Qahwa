@@ -44,7 +44,7 @@ export function TopicsPage() {
         path="/topics"
         noIndex
       />
-      <div className="mx-auto w-full max-w-[88rem]">
+      <div className="mx-auto w-full max-w-[112rem]">
         <div className="mb-8 border border-border-soft bg-surface p-4 sm:p-5">
           <Input
             label="ابحث عن موضوع"
@@ -79,7 +79,7 @@ export function TopicsPage() {
                       {category}
                     </h2>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 min-[1800px]:grid-cols-8">
                     {(items ?? []).map((topic, index) => {
                       const Icon = getTopicIcon(topic.name, topic.category);
                       const tone = TOPIC_TONES[(getToneIndex(category) + index) % TOPIC_TONES.length];

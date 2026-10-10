@@ -184,7 +184,7 @@ export function GamePage() {
         noIndex
       />
 
-      <div className="mx-auto w-full max-w-[88rem] px-[clamp(1rem,3vw,3rem)] pt-4 sm:pt-6">
+      <div className="mx-auto w-full max-w-[112rem] px-[clamp(1rem,3vw,3rem)] pt-4 sm:pt-6">
         <ArenaScoreboard
           players={[
             { id: player1.id, name: player1.name, score: player1Score },
@@ -213,7 +213,7 @@ export function GamePage() {
         )}
       </div>
 
-      <div className="mx-auto flex w-full max-w-[88rem] justify-end px-[clamp(1rem,3vw,3rem)] pt-3">
+      <div className="mx-auto flex w-full max-w-[112rem] justify-end px-[clamp(1rem,3vw,3rem)] pt-3">
         <Button
           variant="danger"
           size="sm"
@@ -227,24 +227,24 @@ export function GamePage() {
       </div>
 
       {abandonMutation.isError && (
-        <div className="mx-[clamp(1rem,3vw,3rem)] mt-3">
+        <div className="mx-auto mt-3 w-full max-w-[112rem] px-[clamp(1rem,3vw,3rem)]">
           <InlineBanner message={normalizeError(abandonMutation.error).message} />
         </div>
       )}
 
       {openMutation.isPending && (
-        <p className="mx-[clamp(1rem,3vw,3rem)] mt-3 border-s-2 border-orange bg-orange-dim px-4 py-3 text-sm text-ink" role="status">
+        <p className="mx-auto mt-3 w-full max-w-[112rem] border-s-2 border-orange bg-orange-dim px-[clamp(1rem,3vw,3rem)] py-3 text-sm text-ink" role="status">
           بنفتح السؤال من اللوحة…
         </p>
       )}
 
       {openMutation.isError && (
-        <div className="mx-[clamp(1rem,3vw,3rem)] mt-3">
+        <div className="mx-auto mt-3 w-full max-w-[112rem] px-[clamp(1rem,3vw,3rem)]">
           <InlineBanner message={normalizeError(openMutation.error).message} />
         </div>
       )}
 
-      <section aria-label="اختيار الأسئلة حسب الموضوع" className="mx-auto min-w-0 w-full max-w-[88rem] px-[clamp(1rem,3vw,3rem)] py-4 sm:py-5">
+      <section aria-label="اختيار الأسئلة حسب الموضوع" className="mx-auto min-w-0 w-full max-w-[112rem] px-[clamp(1rem,3vw,3rem)] py-4 sm:py-5">
         <div className="grid auto-rows-fr grid-cols-2 gap-3 sm:gap-4">
           {session.topics.map((topic, i) => (
             <motion.div

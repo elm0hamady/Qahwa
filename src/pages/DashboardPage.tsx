@@ -28,7 +28,7 @@ export function DashboardPage() {
   return (
     <PageContainer>
       <Seo title="لوحة التحكم" path="/dashboard" noIndex />
-      <div className="mx-auto w-full max-w-[88rem]">
+      <div className="mx-auto w-full max-w-[112rem]">
         <motion.section
           aria-labelledby="dashboard-title"
           initial={reduceMotion ? false : { opacity: 0, y: 12 }}
@@ -37,7 +37,7 @@ export function DashboardPage() {
           className="dashboard-stage relative isolate overflow-hidden border border-border-soft"
         >
           <div aria-hidden="true" className="dashboard-stage-grid absolute inset-0" />
-          <div className="relative grid min-h-[25rem] items-center gap-8 px-6 py-9 sm:px-10 sm:py-12 lg:min-h-[27rem] lg:grid-cols-[minmax(0,1fr)_minmax(16rem,0.58fr)] lg:px-14">
+          <div className="relative grid min-h-[25rem] items-center gap-8 px-6 py-9 sm:px-10 sm:py-12 lg:min-h-[27rem] lg:grid-cols-[minmax(0,1fr)_minmax(16rem,0.58fr)] lg:px-14 2xl:min-h-[32rem] 2xl:px-20">
             <div className="max-w-3xl">
               <p className="text-sm font-bold text-orange">
                 أهلاً بيك تاني{username ? `، ${username}` : ""}
@@ -77,9 +77,9 @@ export function DashboardPage() {
             <div className="hidden justify-self-center lg:block">
               <div
                 aria-hidden="true"
-                className="flex h-64 w-64 items-center justify-center border border-orange/20 bg-bg/60 shadow-[0_0_90px_-34px_rgba(230,169,79,0.42)]"
+                className="flex h-64 w-64 items-center justify-center border border-orange/20 bg-bg/60 shadow-[0_0_90px_-34px_rgba(230,169,79,0.42)] 2xl:h-80 2xl:w-80"
               >
-                <Logo className="h-40 w-40 text-orange" />
+                <Logo className="h-40 w-40 text-orange 2xl:h-48 2xl:w-48" />
               </div>
             </div>
           </div>

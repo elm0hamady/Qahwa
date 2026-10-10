@@ -90,7 +90,7 @@ export function LandingPage() {
             transition={{ duration: reduceMotion ? 0 : 0.5, ease: "easeOut" }}
             className="relative z-10 mx-auto flex max-w-5xl flex-col items-center text-center"
           >
-            <h1 className="max-w-5xl font-display text-[clamp(2.25rem,5.5vw,5rem)] font-extrabold leading-[1.08] tracking-tight text-white text-balance">
+            <h1 className="max-w-5xl font-display text-[clamp(2rem,4.5vw,4.25rem)] font-extrabold leading-[1.08] tracking-tight text-white text-balance">
               أقوى تحدى معلومات فى كل المواضيع
             </h1>
 

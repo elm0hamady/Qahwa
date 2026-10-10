@@ -73,18 +73,8 @@ export function NewGamePage() {
   return (
     <PageContainer>
       <Seo title="ابدأ لعبة جديدة" path="/games/new" noIndex />
-      <div className="mx-auto w-full max-w-[88rem]">
-        <header className="mb-7 border-b border-border-soft pb-5 sm:mb-9 sm:pb-7">
-          <p className="text-sm font-bold text-orange">قهوة · تجهيز المواجهة</p>
-          <h1 className="mt-2 font-display text-3xl font-extrabold text-ink text-balance sm:text-4xl">
-            جهّزوا الطاولة
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-7 text-ink-mute sm:text-base">
-            سمّوا الفريقين واختاروا أربعة مواضيع لبداية الجولة.
-          </p>
-        </header>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6 sm:gap-8">
+      <div className="mx-auto w-full max-w-[112rem]">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:gap-6">
           <section aria-label="أسماء الفريقين" className="grid gap-3 sm:grid-cols-2 sm:gap-4">
             <div className="relative border border-purple/30 bg-surface p-4 sm:p-6">
               <span aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-purple" />
@@ -181,7 +171,7 @@ export function NewGamePage() {
                       <h3 className="mb-3 border-s-2 border-orange ps-3 text-sm font-bold text-ink-dim">
                         {category}
                       </h3>
-                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 min-[1800px]:grid-cols-8">
                         {(items ?? []).map((topic) => {
                           const isSelected = selected.includes(topic.id);
                           const isDisabled = !isSelected && selected.length >= REQUIRED_TOPICS;

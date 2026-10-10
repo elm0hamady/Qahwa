@@ -46,7 +46,7 @@ export function ResultsPage() {
         path={`/games/${sessionId}/results`}
         noIndex
       />
-      <div className="w-full text-start">
+      <div className="mx-auto w-full max-w-[112rem] text-start">
         <Breadcrumbs
           items={[
             { label: "لوحة التحكم", path: "/dashboard" },
@@ -58,7 +58,7 @@ export function ResultsPage() {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.42, ease: "easeOut" }}
-        className="relative mt-5 w-full overflow-hidden rounded-[2rem] border border-border bg-surface p-5 shadow-card sm:p-9"
+        className="relative mx-auto mt-5 w-full max-w-[112rem] overflow-hidden rounded-[2rem] border border-border bg-surface p-5 shadow-card sm:p-9 2xl:p-14"
       >
         <div aria-hidden="true" className="pointer-events-none absolute -top-40 start-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-orange/10 blur-3xl" />
         <div className="relative">
@@ -84,7 +84,7 @@ export function ResultsPage() {
             انتهت كل الأسئلة — ودي النتيجة النهائية.
           </p>
 
-          <div className="mx-auto mt-8 grid max-w-2xl grid-cols-2 gap-3 sm:gap-5">
+          <div className="mx-auto mt-8 grid w-full max-w-2xl grid-cols-2 gap-3 sm:gap-5 2xl:max-w-4xl 2xl:gap-8">
             {sorted.map((entry, i) => (
               <motion.div
                 key={entry.player_id}
