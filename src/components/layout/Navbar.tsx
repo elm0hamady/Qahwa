@@ -1,8 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import { LayoutDashboard, LibraryBig, LogOut, Swords } from "lucide-react";
 import { useAuthStore } from "@/features/auth/store";
 import { useLogout } from "@/features/auth/hooks";
 import { Button } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Logo } from "@/components/ui/Logo";
 
 export function Navbar() {
@@ -12,25 +13,38 @@ export function Navbar() {
   const navigate = useNavigate();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border-soft bg-bg/80 backdrop-blur-md">
-      <div className="flex items-center justify-between px-6 py-4 md:px-10 lg:px-16">
-        <Link to="/" className="flex items-center gap-2">
-          <Logo className="h-9 w-9" />
-          <span className="font-display text-lg font-semibold text-ink">قهوة</span>
+    <header className="sticky top-0 z-40 border-b border-border-soft bg-bg/90 shadow-[0_8px_24px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl">
+      <div className="flex w-full items-center justify-between gap-3 px-[clamp(1rem,3vw,3rem)] py-2.5">
+        <Link to="/" className="group flex shrink-0 items-center gap-2.5">
+          <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-orange/25 bg-orange/10 transition-colors group-hover:border-orange/55 group-hover:bg-orange/15">
+            <Logo className="h-7 w-7" />
+          </span>
+          <span className="font-display text-lg font-bold text-ink">قهوة</span>
         </Link>
 
-        <nav className="flex items-center gap-3">
-          {isAuthenticated ? (
-            <>
-              <Link
-                to="/topics"
-                className="hidden text-sm font-medium text-ink-dim transition-colors hover:text-purple sm:inline"
-              >
-                المواضيع
-              </Link>
-              <span className="hidden text-sm text-ink-mute lg:inline">
-                بتستضيف باسم <span className="text-ink-dim">{username}</span>
-              </span>
+        <nav aria-label="التنقل الرئيسي" className="flex min-w-0 items-center justify-end gap-1 sm:gap-2">
+          <>
+            <Link
+              to="/dashboard"
+              aria-label="لوحة التحكم"
+              className="inline-flex min-h-10 items-center gap-2 rounded-full px-2.5 text-xs font-bold text-ink-dim transition-[background-color,color] hover:bg-surface hover:text-ink sm:px-3 sm:text-sm"
+            >
+              <LayoutDashboard size={16} aria-hidden="true" />
+              <span className="hidden sm:inline">لوحة التحكم</span>
+            </Link>
+            <Link
+              to="/topics"
+              aria-label="المواضيع"
+              className="inline-flex min-h-10 items-center gap-2 rounded-full px-2.5 text-xs font-bold text-ink-dim transition-[background-color,color] hover:bg-surface hover:text-ink sm:px-3 sm:text-sm"
+            >
+              <LibraryBig size={16} aria-hidden="true" />
+              <span className="hidden sm:inline">المواضيع</span>
+            </Link>
+            {isAuthenticated ? (
+              <>
+                <span className="max-w-32 truncate border-s border-border-soft ps-2 text-[10px] text-ink-mute sm:max-w-48 sm:ps-3 sm:text-xs">
+                  بتلعب بحساب <span className="font-bold text-ink-dim">{username}</span>
+                </span>
               <Button
                 variant="ghost"
                 size="sm"
@@ -38,18 +52,20 @@ export function Navbar() {
                   logout();
                   navigate("/");
                 }}
+                aria-label="تسجيل خروج"
+                className="px-2.5 sm:px-4"
               >
-                <LogOut size={14} className="rtl:-scale-x-100" />
-                تسجيل خروج
+                <LogOut size={14} className="rtl:-scale-x-100" aria-hidden="true" />
+                <span className="hidden sm:inline">تسجيل خروج</span>
               </Button>
-            </>
-          ) : (
-            <Link to="/login">
-              <Button variant="purple" size="sm">
+              </>
+            ) : (
+              <ButtonLink to="/login" size="sm" className="ms-1">
+                <Swords size={15} aria-hidden="true" />
                 استضف لعبة
-              </Button>
-            </Link>
-          )}
+              </ButtonLink>
+            )}
+          </>
         </nav>
       </div>
     </header>

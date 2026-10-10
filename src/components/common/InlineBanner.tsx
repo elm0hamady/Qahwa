@@ -10,7 +10,7 @@ export function InlineBanner({ message, tone = "danger" }: { message: string; to
       )}
       role="alert"
     >
-      <AlertCircle size={16} className="mt-0.5 shrink-0" />
+      <AlertCircle size={16} className="mt-0.5 shrink-0" aria-hidden="true" />
       <span>{message}</span>
     </div>
   );

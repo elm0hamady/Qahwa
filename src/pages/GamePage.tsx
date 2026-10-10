@@ -1,16 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motion";
-import { Minus, Plus, Trash2, Music } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { Check, CircleHelp, Music, Trash2 } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { ErrorState } from "@/components/common/ErrorState";
 import { Seo } from "@/components/common/Seo";
-import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { Modal } from "@/components/ui/Modal";
 import { TopicCard } from "@/features/game/TopicCard";
+import { ArenaScoreboard } from "@/features/game/ArenaScoreboard";
 import { DEFAULT_TIMER_SECONDS, TIMER_SECONDS_BY_DIFFICULTY } from "@/features/game/timerConfig";
 import { resolveMediaUrl } from "@/lib/apiClient";
 import { useAbandonSession, useCurrentSession } from "@/features/sessions/hooks";
@@ -30,9 +29,11 @@ import { InlineBanner } from "@/components/common/InlineBanner";
 export function GamePage() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
+  const reduceMotion = useReducedMotion();
 
   const [activeQuestion, setActiveQuestion] = useState<SessionQuestion | null>(null);
   const [celebration, setCelebration] = useState<number | null>(null);
+  const [showAbandonConfirm, setShowAbandonConfirm] = useState(false);
 
   // Prevent the defensive session redirect from racing with the
   // navigation to the results page after the final question is judged.
@@ -61,7 +62,12 @@ export function GamePage() {
     refetch: refetchQuestions,
   } = useSessionQuestions(sessionId);
 
-  const { data: scoreboard } = useScoreboard(sessionId);
+  const {
+    data: scoreboard,
+    isError: scoreboardErrored,
+    error: scoreboardError,
+    refetch: refetchScoreboard,
+  } = useScoreboard(sessionId);
 
   const openMutation = useOpenQuestion(sessionId);
   const judgeMutation = useJudgeQuestion(sessionId);
@@ -99,15 +105,18 @@ export function GamePage() {
     null;
 
   function scoreFor(playerId: number | undefined) {
-    return scoreboard?.find((s) => s.player_id === playerId)?.score ?? 0;
+    return scoreboard?.find((s) => s.player_id === playerId)?.score ?? null;
   }
 
+  const player1Score = scoreFor(player1?.id);
+  const player2Score = scoreFor(player2?.id);
+  const scoresReady = player1Score !== null && player2Score !== null;
   async function handleChipClick(question: SessionQuestion | undefined) {
     if (!question) return;
 
     if (question.state !== "locked") return;
 
-    setActiveQuestion(question);
+    openMutation.reset();
 
     try {
       const opened = await openMutation.mutateAsync(question.id);
@@ -121,12 +130,7 @@ export function GamePage() {
     if (!displayedQuestion) return;
 
     const finishingQuestion = displayedQuestion;
-
-    setActiveQuestion(null);
-
-    if (winnerId !== null) {
-      setCelebration(Date.now());
-    }
+    judgeMutation.reset();
 
     judgeMutation.mutate(
       {
@@ -137,6 +141,8 @@ export function GamePage() {
       },
       {
         onSuccess: (result) => {
+          setActiveQuestion(null);
+          if (winnerId !== null) setCelebration(Date.now());
           if (result.session_finished && sessionId) {
             finishingRef.current = true;
             navigate(`/games/${sessionId}/results`);
@@ -170,7 +176,7 @@ export function GamePage() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer className="!px-0 !py-0">
       <Seo
         title={`${player1.name} ضد ${player2.name}`}
         description={`لوحة مباشرة بين ${player1.name} و${player2.name} على قهوة.`}
@@ -178,195 +184,138 @@ export function GamePage() {
         noIndex
       />
 
-      <Breadcrumbs
-        items={[
-          { label: "لوحة التحكم", path: "/dashboard" },
-          { label: `${player1.name} ضد ${player2.name}` },
-        ]}
-      />
-
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="font-display text-3xl font-semibold text-ink">
-            {player1.name} <span className="text-ink-mute">ضد</span> {player2.name}
-          </h1>
-
-          <p className="mt-1 text-sm text-ink-mute">
-            {session.topics.length} مواضيع على اللوحة
+      <div className="px-[clamp(1rem,3vw,3rem)] pt-4 sm:pt-6">
+        <ArenaScoreboard
+          players={[
+            { id: player1.id, name: player1.name, score: player1Score },
+            { id: player2.id, name: player2.name, score: player2Score },
+          ]}
+          onAdjust={(playerId, amount) => adjustMutation.mutate({ playerId, amount })}
+          adjusting={adjustMutation.isPending || !scoresReady}
+        />
+        {adjustMutation.isError && (
+          <div className="mt-3">
+            <InlineBanner message={normalizeError(adjustMutation.error).message} />
+          </div>
+        )}
+        {adjustMutation.isPending && (
+          <p className="mt-2 text-sm text-ink-mute" role="status">
+            بنسجل تعديل النقاط…
           </p>
-        </div>
+        )}
+        {scoreboardErrored && (
+          <div className="mt-3" role="alert">
+            <ErrorState
+              message={normalizeError(scoreboardError).message}
+              onRetry={() => refetchScoreboard()}
+            />
+          </div>
+        )}
+      </div>
 
+      <div className="flex justify-center px-4 pt-3">
         <Button
           variant="danger"
           size="sm"
           loading={abandonMutation.isPending}
-          onClick={() => {
-            if (confirm("تسيب السيشن دي؟ الخطوة دي مفيهاش رجوع.")) {
-              abandonMutation.mutate(undefined, {
-                onSuccess: () => navigate("/dashboard"),
-              });
-            }
-          }}
+          onClick={() => setShowAbandonConfirm(true)}
+          className="min-h-11 min-w-40"
         >
-          <Trash2 size={14} />
+          <Trash2 size={14} aria-hidden="true" />
           إلغاء اللعبة
         </Button>
       </div>
 
       {abandonMutation.isError && (
-        <div className="mt-4">
-          <InlineBanner
-            message={normalizeError(abandonMutation.error).message}
-          />
+        <div className="mx-[clamp(1rem,3vw,3rem)] mt-3">
+          <InlineBanner message={normalizeError(abandonMutation.error).message} />
         </div>
       )}
 
-      <div className="mt-6 grid grid-cols-2 gap-3">
-        <ScoreCard
-          name={player1.name}
-          score={scoreFor(player1.id)}
-          tone="purple"
-          onAdjust={(amount) =>
-            adjustMutation.mutate({
-              playerId: player1.id,
-              amount,
-            })
-          }
-          adjusting={adjustMutation.isPending}
-        />
+      {openMutation.isPending && (
+        <p className="mx-[clamp(1rem,3vw,3rem)] mt-3 border-s-2 border-orange bg-orange-dim px-4 py-3 text-sm text-ink" role="status">
+          بنفتح السؤال من اللوحة…
+        </p>
+      )}
 
-        <ScoreCard
-          name={player2.name}
-          score={scoreFor(player2.id)}
-          tone="orange"
-          onAdjust={(amount) =>
-            adjustMutation.mutate({
-              playerId: player2.id,
-              amount,
-            })
-          }
-          adjusting={adjustMutation.isPending}
-        />
-      </div>
+      {openMutation.isError && (
+        <div className="mx-[clamp(1rem,3vw,3rem)] mt-3">
+          <InlineBanner message={normalizeError(openMutation.error).message} />
+        </div>
+      )}
 
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {session.topics.map((topic, i) => (
-          <motion.div
-            key={topic.id}
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{
-              type: "spring",
-              stiffness: 300,
-              damping: 24,
-              delay: i * 0.06,
-            }}
-          >
-            <TopicCard
-              topicName={topic.name}
-              players={[player1, player2]}
-              cellMap={cellMap}
-              onSelectQuestion={handleChipClick}
-              openPending={openMutation.isPending}
-            />
-          </motion.div>
-        ))}
-      </div>
+      <section aria-label="اختيار الأسئلة حسب الموضوع" className="min-w-0 px-[clamp(1rem,3vw,3rem)] py-4 sm:py-5">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 2xl:grid-cols-3">
+          {session.topics.map((topic, i) => (
+            <motion.div
+              key={topic.id}
+              initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: reduceMotion ? 0 : 0.3,
+                delay: reduceMotion ? 0 : i * 0.045,
+              }}
+            >
+              <TopicCard
+                topicName={topic.name}
+                players={[player1, player2]}
+                cellMap={cellMap}
+                onSelectQuestion={handleChipClick}
+                openPending={openMutation.isPending}
+              />
+            </motion.div>
+          ))}
+        </div>
+      </section>
 
       <QuestionModal
         question={displayedQuestion}
         onClose={() => setActiveQuestion(null)}
         onJudge={handleJudge}
         judging={judgeMutation.isPending}
+        judgeError={judgeMutation.isError ? normalizeError(judgeMutation.error).message : null}
         players={[player1, player2]}
       />
 
-      {celebration && <ConfettiBurst key={celebration} />}
+      <Modal
+        open={showAbandonConfirm}
+        onClose={() => setShowAbandonConfirm(false)}
+        title="إلغاء اللعبة؟"
+      >
+        <div className="flex flex-col gap-4">
+          <p className="leading-relaxed text-ink-dim">
+            هتتقفل الجولة الحالية ومش هتقدر ترجع للوحة دي. متأكد إنك عايز تلغيها؟
+          </p>
+          {abandonMutation.isError && (
+            <div>
+              <InlineBanner message={normalizeError(abandonMutation.error).message} />
+            </div>
+          )}
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button
+              variant="ghost"
+              disabled={abandonMutation.isPending}
+              onClick={() => setShowAbandonConfirm(false)}
+            >
+              كمّل اللعبة
+            </Button>
+            <Button
+              variant="danger"
+              loading={abandonMutation.isPending}
+              onClick={() =>
+                abandonMutation.mutate(undefined, {
+                  onSuccess: () => navigate("/dashboard"),
+                })
+              }
+            >
+              ألغِ اللعبة
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {celebration && !reduceMotion && <ConfettiBurst key={celebration} />}
     </PageContainer>
-  );
-}
-
-function AnimatedScore({
-  value,
-  className,
-}: {
-  value: number;
-  className?: string;
-}) {
-  const prevValue = useRef(value);
-  const [delta, setDelta] = useState<{
-    id: number;
-    amount: number;
-  } | null>(null);
-
-  const motionValue = useMotionValue(value);
-  const spring = useSpring(motionValue, {
-    stiffness: 130,
-    damping: 18,
-  });
-
-  const [display, setDisplay] = useState(value);
-
-  useEffect(() => {
-    const unsubscribe = spring.on("change", (v) => {
-      setDisplay(Math.round(v));
-    });
-
-    return unsubscribe;
-  }, [spring]);
-
-  useEffect(() => {
-    if (value !== prevValue.current) {
-      setDelta({
-        id: Date.now(),
-        amount: value - prevValue.current,
-      });
-
-      prevValue.current = value;
-    }
-
-    motionValue.set(value);
-  }, [value, motionValue]);
-
-  return (
-    <span className={cn("relative inline-block", className)}>
-      {display}
-
-      <AnimatePresence>
-        {delta && (
-          <motion.span
-            key={delta.id}
-            initial={{
-              opacity: 0,
-              y: 0,
-              scale: 0.7,
-            }}
-            animate={{
-              opacity: 1,
-              y: -34,
-              scale: 1.15,
-            }}
-            exit={{
-              opacity: 0,
-              y: -46,
-            }}
-            transition={{
-              duration: 0.8,
-              ease: "easeOut",
-            }}
-            onAnimationComplete={() =>
-              setDelta((d) => (d?.id === delta.id ? null : d))
-            }
-            className={cn(
-              "pointer-events-none absolute -top-1 start-1/2 -translate-x-1/2 whitespace-nowrap text-base font-extrabold",
-              delta.amount > 0 ? "text-success" : "text-danger"
-            )}
-          >
-            {delta.amount > 0 ? `+${delta.amount}` : delta.amount}
-          </motion.span>
-        )}
-      </AnimatePresence>
-    </span>
   );
 }
 
@@ -421,80 +370,6 @@ function ConfettiBurst() {
   );
 }
 
-function ScoreCard({
-  name,
-  score,
-  tone,
-  onAdjust,
-  adjusting,
-}: {
-  name: string;
-  score: number;
-  tone: "purple" | "orange";
-  onAdjust: (amount: 100 | -100) => void;
-  adjusting: boolean;
-}) {
-  return (
-    <Card
-      className={cn(
-        "flex items-center justify-between p-4",
-        tone === "purple"
-          ? "border-purple/30"
-          : "border-orange/30"
-      )}
-    >
-      <div>
-        <p className="text-sm text-ink-mute">{name}</p>
-
-        <p
-          className={cn(
-            "font-display text-3xl font-bold",
-            tone === "purple"
-              ? "text-purple"
-              : "text-orange"
-          )}
-        >
-          <AnimatedScore value={score} />
-        </p>
-      </div>
-
-      <div className="flex gap-1.5">
-        <motion.button
-          type="button"
-          disabled={adjusting}
-          onClick={() => onAdjust(-100)}
-          aria-label={`نقص 100 من ${name}`}
-          whileHover={
-            adjusting ? undefined : { scale: 1.15 }
-          }
-          whileTap={
-            adjusting ? undefined : { scale: 0.85 }
-          }
-          className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-border text-ink-mute transition-colors hover:border-danger hover:text-danger disabled:opacity-50"
-        >
-          <Minus size={14} />
-        </motion.button>
-
-        <motion.button
-          type="button"
-          disabled={adjusting}
-          onClick={() => onAdjust(100)}
-          aria-label={`زود 100 لـ ${name}`}
-          whileHover={
-            adjusting ? undefined : { scale: 1.15 }
-          }
-          whileTap={
-            adjusting ? undefined : { scale: 0.85 }
-          }
-          className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-border text-ink-mute transition-colors hover:border-success hover:text-success disabled:opacity-50"
-        >
-          <Plus size={14} />
-        </motion.button>
-      </div>
-    </Card>
-  );
-}
-
 function MediaPreview({
   media,
 }: {
@@ -525,7 +400,7 @@ function MediaPreview({
 
   return (
     <div className="mt-3 flex items-center gap-2 rounded-xl border border-border p-3 text-ink-dim">
-      <Music size={16} />
+      <Music size={16} aria-hidden="true" />
       <audio
         controls
         src={url}
@@ -540,12 +415,14 @@ function QuestionModal({
   onClose,
   onJudge,
   judging,
+  judgeError,
   players,
 }: {
   question: SessionQuestion | null;
   onClose: () => void;
   onJudge: (winnerId: number | null) => void;
   judging: boolean;
+  judgeError: string | null;
   players: [
     { id: number; name: string },
     { id: number; name: string }
@@ -572,6 +449,7 @@ function QuestionModal({
         question={question}
         onJudge={onJudge}
         judging={judging}
+        judgeError={judgeError}
         players={players}
       />
     </Modal>
@@ -585,6 +463,7 @@ function CountdownRing({
   secondsLeft: number;
   totalSeconds: number;
 }) {
+  const reduceMotion = useReducedMotion();
   const radius = 24;
   const circumference = 2 * Math.PI * radius;
   const progress =
@@ -605,14 +484,13 @@ function CountdownRing({
     <motion.div
       animate={
         timeUp
-          ? { scale: [1, 1.12, 1] }
+          ? reduceMotion ? undefined : { scale: [1, 1.08, 1] }
           : { scale: 1 }
       }
       transition={
         timeUp
           ? {
-              duration: 0.7,
-              repeat: Infinity,
+              duration: reduceMotion ? 0 : 0.45,
             }
           : undefined
       }
@@ -621,6 +499,7 @@ function CountdownRing({
       <svg
         viewBox="0 0 56 56"
         className="h-14 w-14 -rotate-90"
+        aria-hidden="true"
       >
         <circle
           cx="28"
@@ -647,13 +526,15 @@ function CountdownRing({
               circumference * (1 - progress),
           }}
           transition={{
-            duration: 0.9,
+            duration: reduceMotion ? 0 : 0.9,
             ease: "linear",
           }}
         />
       </svg>
 
       <span
+        role="timer"
+        aria-label={`${Math.max(secondsLeft, 0)} ثانية متبقية`}
         className={cn(
           "absolute font-display text-base font-bold",
           colorClass
@@ -669,11 +550,13 @@ function QuestionModalContent({
   question,
   onJudge,
   judging,
+  judgeError,
   players,
 }: {
   question: SessionQuestion;
   onJudge: (winnerId: number | null) => void;
   judging: boolean;
+  judgeError: string | null;
   players: [
     { id: number; name: string },
     { id: number; name: string }
@@ -681,6 +564,7 @@ function QuestionModalContent({
 }) {
   const [answer, setAnswer] =
     useState<RevealedAnswer | null>(null);
+  const reduceMotion = useReducedMotion();
 
   const revealMutation = useRevealAnswer();
 
@@ -716,29 +600,44 @@ function QuestionModalContent({
   }, [showTimer]);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-start justify-between gap-3">
-        <p className="text-xs tracking-wide text-ink-mute">
-          مخصص لـ {question.player}
-        </p>
-
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border-soft bg-bg-soft px-4 py-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-purple/35 bg-purple-dim text-purple">
+            <CircleHelp size={19} aria-hidden="true" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-xs text-ink-mute">دور اللاعب</p>
+            <p className="truncate text-sm font-bold text-ink">{question.player}</p>
+          </div>
+        </div>
         {showTimer && (
-          <CountdownRing
-            secondsLeft={secondsLeft}
-            totalSeconds={totalSeconds}
-          />
+          <div className="flex items-center gap-2">
+            <span className="hidden text-xs font-medium text-ink-mute sm:inline">وقت الإجابة</span>
+            <CountdownRing
+              secondsLeft={secondsLeft}
+              totalSeconds={totalSeconds}
+            />
+          </div>
         )}
       </div>
 
-      {question.text ? (
-        <p className="text-lg leading-relaxed text-ink">
-          {question.text}
-        </p>
-      ) : (
-        <p className="text-ink-mute">
-          بيفتح السؤال…
-        </p>
-      )}
+      <section
+        aria-label="نص السؤال"
+        className="relative overflow-hidden rounded-2xl border border-border-soft bg-bg px-5 py-6 sm:px-8 sm:py-9"
+      >
+        <span aria-hidden="true" className="absolute start-0 top-0 h-full w-1 bg-gradient-to-b from-purple via-orange to-transparent" />
+        <p className="mb-3 text-[11px] font-bold text-orange">السؤال</p>
+        {question.text ? (
+          <p className="max-w-3xl text-xl font-semibold leading-[1.8] text-ink sm:text-2xl">
+            {question.text}
+          </p>
+        ) : (
+          <p className="text-ink-mute" role="status">
+            بنحمّل السؤال…
+          </p>
+        )}
+      </section>
 
       {question.media && (
         <MediaPreview media={question.media} />
@@ -746,6 +645,9 @@ function QuestionModalContent({
 
       {canRevealAnswer && !answer && (
         <div className="flex flex-col gap-2">
+          <p className="text-sm leading-relaxed text-ink-mute">
+            سيب اللاعبين يجاوبوا، وبعدها اكشف الإجابة عشان تختار مين كسب.
+          </p>
           <Button
             variant="outline"
             size="sm"
@@ -775,6 +677,7 @@ function QuestionModalContent({
 
       {answer && (
         <motion.div
+          role="status"
           initial={{
             opacity: 0,
             scale: 0.9,
@@ -790,14 +693,15 @@ function QuestionModalContent({
             stiffness: 380,
             damping: 22,
           }}
-          className="rounded-xl border-2 border-purple/40 bg-purple-dim px-4 py-3"
+          className="rounded-2xl border border-orange/45 bg-orange-dim/60 px-4 py-4 sm:px-5"
         >
-          <p className="text-xs font-bold tracking-wide text-purple">
-            الإجابة
+          <p className="flex items-center gap-2 text-xs font-bold text-orange">
+            <Check size={14} aria-hidden="true" />
+            الإجابة الصحيحة
           </p>
 
           {answer.text ? (
-            <p className="mt-1 text-ink">
+            <p className="mt-2 text-lg font-bold leading-relaxed text-ink sm:text-xl">
               {answer.text}
             </p>
           ) : (
@@ -813,52 +717,58 @@ function QuestionModalContent({
       )}
 
       {canJudge && (
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 10,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            delay: 0.1,
-            duration: 0.3,
-          }}
-          className="mt-1 flex flex-wrap gap-2"
-        >
-          <Button
-            variant="purple"
-            size="sm"
-            loading={judging}
-            onClick={() =>
-              onJudge(players[0].id)
-            }
+        <section aria-labelledby="judge-question-title" className="rounded-2xl border border-border-soft bg-surface p-4 sm:p-5">
+          <div className="mb-4">
+            <p className="text-xs font-bold text-success">الإجابة اتكشفت</p>
+            <h3 id="judge-question-title" className="mt-1 font-display text-lg font-bold text-ink">
+              مين يستحق النقاط؟
+            </h3>
+          </div>
+          {judgeError && (
+            <div>
+              <InlineBanner message={judgeError} />
+            </div>
+          )}
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.22 }}
+            className="grid grid-cols-1 gap-2 sm:grid-cols-3"
           >
-            {players[0].name} كسب
-          </Button>
+            <Button
+              variant="purple"
+              size="md"
+              loading={judging}
+              onClick={() => onJudge(players[0].id)}
+              className="w-full"
+            >
+              <Check size={15} aria-hidden="true" />
+              {players[0].name} كسب
+            </Button>
 
-          <Button
-            variant="orange"
-            size="sm"
-            loading={judging}
-            onClick={() =>
-              onJudge(players[1].id)
-            }
-          >
-            {players[1].name} كسب
-          </Button>
+            <Button
+              variant="orange"
+              size="md"
+              loading={judging}
+              onClick={() => onJudge(players[1].id)}
+              className="w-full"
+            >
+              <Check size={15} aria-hidden="true" />
+              {players[1].name} كسب
+            </Button>
 
-          <Button
-            variant="outline"
-            size="sm"
-            loading={judging}
-            onClick={() => onJudge(null)}
-          >
-            محدش جاوب
-          </Button>
-        </motion.div>
+            <Button
+              variant="outline"
+              size="md"
+              loading={judging}
+              onClick={() => onJudge(null)}
+              className="w-full"
+            >
+              من غير نقاط
+            </Button>
+          </motion.div>
+          {judging && <p className="text-sm text-ink-mute" role="status">بنسجل الحكم والنتيجة…</p>}
+        </section>
       )}
     </div>
   );

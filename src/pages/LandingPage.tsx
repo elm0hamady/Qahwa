@@ -1,83 +1,36 @@
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowDownLeft, ArrowUpLeft, Clapperboard, Swords } from "lucide-react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import {
-  Gauge,
-  Layers,
-  ListChecks,
-  ShieldCheck,
-  Sparkles,
-  SquareStack,
-  Swords,
-} from "lucide-react";
-import { HeroVisual } from "@/components/landing/HeroVisual";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { TokenChip } from "@/components/ui/TokenChip";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Seo } from "@/components/common/Seo";
 import { SITE_NAME, absoluteUrl } from "@/lib/seo";
+import { useAuthStore } from "@/features/auth/store";
 import { getTopicIcon } from "@/features/game/topicIcons";
 
-// Just a taste of the variety a question bank can hold — decorative examples,
-// not a live list of the app's actual topics (those come from the host's
-// real bank once signed in).
-const EXAMPLE_TOPICS = ["تاريخ", "أفلام", "رياضة", "علوم", "جغرافيا", "موسيقى", "فن", "طبخ"];
-
-const STEPS = [
-  {
-    n: "01",
-    title: "اختار أربعة مواضيع",
-    description:
-      "دور في بنك الأسئلة حسب الفئة، واقفل على أربعة مواضيع هيواجهها اللاعبين الاتنين.",
-  },
-  {
-    n: "02",
-    title: "شغّل المبارزة",
-    description:
-      "افتح توكن، اعرض السؤال على الشاشة، وبعدين احكم مين جاوب الأول — كل ده من اللوحة.",
-  },
-  {
-    n: "03",
-    title: "احسم النتيجة",
-    description:
-      "السكور بيتحدث لحظة ما تحكم، ومعاك تعديل يدوي جاهز لو احتجت قاعدة إضافية أو جولة بونص.",
-  },
+const EXAMPLE_TOPICS = [
+  "تاريخ",
+  "كورة",
+  "بنات وبس",
+  "طبخ",
+  "جغرافيا",
+  "انمى",
+  "معلومات عامة",
+  "رياضات الكترونية",
 ];
 
-const FEATURES = [
-  {
-    icon: SquareStack,
-    title: "بنك أسئلة حقيقي",
-    description: "المواضيع متقسمة حسب الفئة والصعوبة — المواضيع الكاملة بس هي اللي توصل للوحة.",
-  },
-  {
-    icon: Swords,
-    title: "مصمم للاعبين اتنين",
-    description: "كل سيشن مبارزة وجهًا لوجه، واللوحة متقسمة بوضوح بين اللاعبين الاتنين.",
-  },
-  {
-    icon: Gauge,
-    title: "سكور مباشر",
-    description: "السكور بيتحرك لحظة ما تحكم على سؤال، ومعاك تعديل سريع ±100 لو احتاج الأوضة كده.",
-  },
-  {
-    icon: Layers,
-    title: "أسئلة بالصور والصوت",
-    description: "صور أو صوت أو فيديو بيظهر جنب نص السؤال لما تفتح التوكن — من غير أي إعداد إضافي.",
-  },
-  {
-    icon: ListChecks,
-    title: "سيشن واحدة في المرة",
-    description: "المبارزة الشغالة بترجعلك من نفس المكان، فالـ refresh مايضيعش حالة اللوحة.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "حسابات مضيف مؤمّنة بـ JWT",
-    description: "كل حركة على اللوحة مربوطة بجلسة المضيف بتاعك، والتوكنز بتتجدد أوتوماتيك.",
-  },
-];
+const HOW_TO_PLAY = [
+  "كل لاعب بيختار موضوعين من اللى هو قوى فيهم وله 3 اسئلة فى كل موضوع من سهل لصعب",
+  "كل لاعب له دور بيختار سؤال فى موضوع يختاره بالمستوى اللى يفضله له دقيقة يجاوب ثم يجاوب اللاعب التانى",
+  "الحكم هو المتحكم فى الدور يقول مين اللى عليه الدور ومين جاوب صح ومين ياخد النقط",
+  "الحكم له الحق انه يزود نقط لو الاجابة عجبته او ينقص لو اى لاعب تجاوز",
+  "الفائز صاحب اعلى نقط",
+] as const;
 
 export function LandingPage() {
+  const reduceMotion = useReducedMotion();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
   const jsonLd = [
     {
       "@context": "https://schema.org",
@@ -98,8 +51,7 @@ export function LandingPage() {
       name: SITE_NAME,
       applicationCategory: "GameApplication",
       operatingSystem: "Web",
-      description:
-        "تطبيق مبارزات أسئلة يديره المضيف. اختر أربعة مواضيع، شغّل لوحة مباشرة بين لاعبين، واحسم النتيجة لحظة بلحظة.",
+      description: "مبارزة أسئلة مباشرة بين لاعبين، يديرها المضيف من اختيار المواضيع حتى النتيجة النهائية.",
       offers: {
         "@type": "Offer",
         price: "0",
@@ -108,124 +60,99 @@ export function LandingPage() {
     },
   ];
 
+  const primaryRoute = isAuthenticated ? "/games/new" : "/login";
+  const primaryLabel = "العب دلوقتى";
+
   return (
     <>
       <Seo
-        title="قهوة — مبارزات أسئلة يديرها المضيف"
-        description="قهوة بتحوّل بنك الأسئلة بتاعك لمبارزة مباشرة بين لاعبين. اختار أربعة مواضيع، افتح اللوحة، واحكم كل جولة من شاشة واحدة."
+        title="قهوة — ساحة مبارزات الأسئلة"
+        description="لعبة جماعية تلعبها مع اهلك واصحابك على القهوة مكونة من 4 مواضيع يختارها اللاعبين"
         path="/"
         jsonLd={jsonLd}
       />
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        <PageContainer className="grid items-center gap-12 py-16 lg:grid-cols-[1.1fr_1fr] lg:py-24">
+
+      <section className="relative isolate min-h-[calc(100svh-4.25rem)] overflow-hidden border-b border-border-soft">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage:
+              "linear-gradient(90deg, rgba(5, 7, 10, 0.76) 0%, rgba(5, 7, 10, 0.56) 42%, rgba(5, 7, 10, 0.76) 100%), url('/qahwa-hero.jpg')",
+          }}
+        />
+        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(242,173,69,0.18),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(189,154,255,0.16),transparent_30%)]" />
+
+        <PageContainer className="relative flex min-h-[calc(100svh-4.25rem)] items-center justify-center py-10 sm:py-12 lg:py-16">
           <motion.div
-            initial={{ opacity: 0, y: 18 }}
+            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            transition={{ duration: reduceMotion ? 0 : 0.5, ease: "easeOut" }}
+            className="relative z-10 mx-auto flex max-w-5xl flex-col items-center text-center"
           >
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-purple/30 bg-purple/10 px-3 py-1 text-xs font-medium text-purple">
-              <Sparkles size={12} />
-              مبارزات أسئلة يديرها المضيف
-            </span>
-            <h1 className="mt-5 font-display text-4xl font-semibold leading-[1.08] text-ink text-balance sm:text-5xl lg:text-6xl">
-              شغّل ليلة أسئلة الناس هتفضل تتكلم عنها.
+            <h1 className="max-w-5xl font-display text-[clamp(2.7rem,7.5vw,7rem)] font-extrabold leading-[1.08] tracking-tight text-white text-balance">
+              أقوى تحدى معلومات فى كل المواضيع
             </h1>
-            <p className="mt-5 max-w-lg text-lg leading-relaxed text-ink-dim">
-              قهوة بتحوّل بنك الأسئلة بتاعك لمبارزة مباشرة بين لاعبين. اختار المواضيع،
-              افتح اللوحة، واحكم كل جولة من شاشة واحدة — والسكور بيتحدث معاك أول بأول.
+
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-200 sm:text-xl">
+              لعبة جماعية تلعبها مع اهلك واصحابك على القهوة مكونة من 4 مواضيع يختارها اللاعبين
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/login">
-                <Button variant="purple" size="lg">
-                  ابدأ الاستضافة
-                </Button>
-              </Link>
-              <a href="#how-it-works">
-                <Button variant="outline" size="lg">
-                  شوف طريقة اللعب
-                </Button>
+
+            <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+              <ButtonLink to={primaryRoute} size="lg" className="min-h-14 px-8 text-base sm:text-lg">
+                <Swords size={18} aria-hidden="true" />
+                {primaryLabel}
+              </ButtonLink>
+              <a
+                href="#how-to-play"
+                className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full border border-white/20 bg-black/25 px-7 text-sm font-bold text-white/90 backdrop-blur-sm transition-[border-color,background-color,transform] hover:-translate-y-0.5 hover:border-orange/70 hover:bg-black/35"
+              >
+                طريقة اللعب
+                <ArrowDownLeft size={16} aria-hidden="true" />
               </a>
             </div>
           </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
-          >
-            <HeroVisual />
-          </motion.div>
         </PageContainer>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section id="how-it-works" className="border-t border-border-soft">
-        <PageContainer className="py-20">
-          <div className="max-w-xl">
-            <h2 className="font-display text-3xl font-semibold text-ink text-balance">
-              ثلاث خطوات من لوحة فاضية للنتيجة النهائية.
-            </h2>
+      <section id="arena" className="scroll-mt-24 border-b border-border-soft bg-bg-soft/55">
+        <PageContainer className="py-14 sm:py-20 lg:py-24">
+          <div className="grid items-end gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,0.5fr)]">
+            <div>
+              <p className="mb-3 flex items-center gap-2 text-sm font-bold text-purple">
+                <Clapperboard size={16} aria-hidden="true" />
+                اختاروا مجال التحدي
+              </p>
+              <h2 className="max-w-4xl font-display text-3xl font-bold leading-tight text-ink text-balance sm:text-5xl">
+                اسئلة فى كل المواضيع
+              </h2>
+            </div>
           </div>
 
-          <div className="mt-10 grid gap-6 sm:grid-cols-3">
-            {STEPS.map((step, i) => (
-              <motion.div
-                key={step.n}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.4, delay: i * 0.08 }}
-              >
-                <Card className="h-full p-6">
-                  <span className="font-display text-2xl font-semibold text-purple">{step.n}</span>
-                  <h3 className="mt-3 text-lg font-semibold text-ink">{step.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-mute">{step.description}</p>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="mt-10 flex items-center gap-3">
-            <TokenChip value={100} player={1} state="locked" size="sm" />
-            <TokenChip value={300} player={2} state="opened" size="sm" />
-            <TokenChip value={500} player={1} state="judged" size="sm" />
-            <p className="ms-2 text-sm text-ink-mute">
-              مقفول، متفتح، متجادج — كل توكن على اللوحة بيقولك بالظبط الجولة واصلة فين.
-            </p>
-          </div>
-        </PageContainer>
-      </section>
-
-      {/* EXAMPLE TOPICS — decorative preview, not a live/complete list */}
-      <section className="border-t border-border-soft bg-bg-soft/40">
-        <PageContainer className="py-20">
-          <div className="max-w-xl">
-            <h2 className="font-display text-3xl font-semibold text-ink text-balance">
-              أي موضوع تقريبًا يقدر يتحول للعبة.
-            </h2>
-            <p className="mt-2 text-ink-mute">مجرد أمثلة — بنك الأسئلة بتاعك هو اللي بيحدد المواضيع الفعلية.</p>
-          </div>
-
-          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {EXAMPLE_TOPICS.map((topic, i) => {
+          <div className="mt-9 grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-8">
+            {EXAMPLE_TOPICS.map((topic, index) => {
               const Icon = getTopicIcon(topic);
+              const destination = isAuthenticated ? "/topics" : "/login";
               return (
                 <motion.div
                   key={topic}
-                  initial={{ opacity: 0, y: 16, scale: 0.9 }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 22, delay: i * 0.05 }}
-                  whileHover={{ scale: 1.06, y: -4 }}
+                  initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.25 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.32, delay: reduceMotion ? 0 : index * 0.035 }}
                 >
-                  <Card className="flex flex-col items-center gap-2 p-5 text-center transition-colors hover:border-purple">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-token border-2 border-purple bg-purple-dim text-purple">
-                      {/* oxlint-disable-next-line react-hooks/static-components */}
-                      <Icon size={20} />
-                    </span>
-                    <span className="text-sm font-bold text-ink">{topic}</span>
-                  </Card>
+                  <Link
+                    to={destination}
+                    aria-label={`${topic} — ${isAuthenticated ? "افتح بنك المواضيع" : "سجّل الدخول لاختيار المواضيع"}`}
+                    className="group relative flex min-h-28 flex-col justify-between overflow-hidden border border-border-soft bg-surface p-4 transition-[border-color,background-color,transform] duration-200 hover:-translate-y-1 hover:border-orange/60 hover:bg-surface-hi focus-visible:outline-offset-4 sm:min-h-36 sm:p-5"
+                  >
+                    <Icon size={23} className="text-purple transition-colors group-hover:text-orange" aria-hidden="true" />
+                    <div className="flex items-end justify-between gap-2">
+                      <span className="font-display text-lg font-bold text-ink sm:text-xl">{topic}</span>
+                      <ArrowUpLeft size={15} className="text-ink-mute transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-orange" aria-hidden="true" />
+                    </div>
+                    <span aria-hidden="true" className="absolute -bottom-4 -end-3 h-16 w-16 skew-x-[-18deg] border border-purple/10" />
+                  </Link>
                 </motion.div>
               );
             })}
@@ -233,63 +160,46 @@ export function LandingPage() {
         </PageContainer>
       </section>
 
-      {/* FEATURES */}
-      <section className="border-t border-border-soft">
-        <PageContainer className="py-20">
-          <div className="max-w-xl">
-            <h2 className="font-display text-3xl font-semibold text-ink text-balance">
-              كل حاجة محتاجها الجولة المباشرة، ولا حاجة زيادة عن اللزوم.
-            </h2>
-          </div>
-
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((feature, i) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.4, delay: i * 0.05 }}
+      <section id="how-to-play" className="scroll-mt-24 border-b border-border-soft">
+        <PageContainer className="py-14 sm:py-20 lg:py-24">
+          <h2 className="mb-8 font-display text-3xl font-bold leading-tight text-ink text-balance sm:text-5xl">
+            طريقة اللعب
+          </h2>
+          <ol className="divide-y divide-border-soft border-y border-border-soft">
+            {HOW_TO_PLAY.map((rule, index) => (
+              <motion.li
+                key={rule}
+                initial={reduceMotion ? false : { opacity: 0, x: 12 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: reduceMotion ? 0 : 0.3, delay: reduceMotion ? 0 : index * 0.04 }}
+                className="grid grid-cols-[2.5rem_minmax(0,1fr)] items-start gap-4 py-5 sm:grid-cols-[3.5rem_minmax(0,1fr)] sm:gap-6 sm:py-6"
               >
-                <Card className="h-full p-6 transition-colors hover:border-purple/40">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-token border border-border text-purple">
-                    <feature.icon size={18} />
-                  </span>
-                  <h3 className="mt-4 text-base font-semibold text-ink">{feature.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-mute">{feature.description}</p>
-                </Card>
-              </motion.div>
+                <span aria-hidden="true" className="font-display text-2xl font-extrabold text-orange sm:text-3xl">
+                  {index + 1}
+                </span>
+                <p className="pt-1 text-base leading-relaxed text-ink-dim sm:text-lg">{rule}</p>
+              </motion.li>
             ))}
-          </div>
+          </ol>
         </PageContainer>
       </section>
 
-      {/* CTA */}
-      <section className="border-t border-border-soft">
-        <PageContainer className="py-20">
-          <Card className="relative mx-auto max-w-4xl overflow-hidden px-8 py-14 text-center sm:px-16">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0"
-              style={{
-                background:
-                  "radial-gradient(ellipse 500px 260px at 50% 0%, rgba(139,92,246,0.14), transparent 60%)",
-              }}
-            />
+      <section className="relative overflow-hidden">
+        <PageContainer className="py-14 sm:py-20">
+          <div className="relative flex flex-col justify-between gap-7 overflow-hidden border border-orange/30 bg-surface p-6 shadow-card sm:flex-row sm:items-center sm:p-10 lg:p-14">
+            <div aria-hidden="true" className="pointer-events-none absolute -end-20 -top-32 h-72 w-72 rounded-full border border-orange/20" />
+            <div aria-hidden="true" className="pointer-events-none absolute -end-8 -top-20 h-56 w-56 rounded-full border border-orange/15" />
             <div className="relative">
-              <h2 className="font-display text-3xl font-semibold text-ink text-balance sm:text-4xl">
-                لوحتك بعيدة عنك بتسجيل دخول واحد بس.
+              <h2 className="max-w-4xl font-display text-3xl font-bold leading-tight text-ink text-balance sm:text-5xl">
+                دلوقتى مش فاضل غير انك تبدأ تختبر معلوماتك
               </h2>
-              <p className="mx-auto mt-3 max-w-md text-ink-mute">
-                سجّل الدخول بحساب المضيف بتاعك وجهّز الطاولة لمبارزة الليلة دي.
-              </p>
-              <Link to="/login" className="mt-7 inline-block">
-                <Button variant="purple" size="lg">
-                  ابدأ الاستضافة
-                </Button>
-              </Link>
             </div>
-          </Card>
+            <ButtonLink to={primaryRoute} size="lg" className="relative min-h-14 shrink-0 px-8">
+              العب دلوقتى
+              <ArrowUpLeft size={17} aria-hidden="true" />
+            </ButtonLink>
+          </div>
         </PageContainer>
       </section>
     </>

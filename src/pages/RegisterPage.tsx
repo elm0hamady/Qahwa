@@ -7,6 +7,7 @@ import { MailCheck } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { InlineBanner } from "@/components/common/InlineBanner";
 import { Seo } from "@/components/common/Seo";
@@ -65,15 +66,15 @@ export function RegisterPage() {
         >
           <Card className="flex flex-col items-center gap-3 p-8 text-center">
             <span className="flex h-14 w-14 items-center justify-center rounded-token border-2 border-purple bg-purple-dim text-purple">
-              <MailCheck size={26} />
+              <MailCheck size={26} aria-hidden="true" />
             </span>
             <h1 className="font-display text-xl font-bold text-ink">راجع إيميلك</h1>
             <p className="text-sm text-ink-mute">
               بعتنالك رابط تفعيل على إيميلك. دوس عليه عشان تفعّل حسابك، وبعدها تقدر تسجّل دخول عادي.
             </p>
-            <Link to="/login" className="mt-2">
-              <Button variant="outline">روح لتسجيل الدخول</Button>
-            </Link>
+            <ButtonLink to="/login" variant="outline" className="mt-2">
+              روح لتسجيل الدخول
+            </ButtonLink>
           </Card>
         </motion.div>
       ) : (
@@ -94,7 +95,6 @@ export function RegisterPage() {
               <Input
                 label="الاسم الأول"
                 autoComplete="given-name"
-                autoFocus
                 error={errors.first_name?.message}
                 {...registerField("first_name")}
               />
@@ -107,12 +107,14 @@ export function RegisterPage() {
             </div>
             <Input
               label="اسم المستخدم"
+              spellCheck={false}
               autoComplete="username"
               error={errors.username?.message}
               {...registerField("username")}
             />
             <Input
               label="الإيميل"
+              spellCheck={false}
               type="email"
               autoComplete="email"
               error={errors.email?.message}
@@ -120,6 +122,7 @@ export function RegisterPage() {
             />
             <Input
               label="الباسورد"
+              spellCheck={false}
               type="password"
               autoComplete="new-password"
               error={errors.password?.message}
@@ -127,6 +130,7 @@ export function RegisterPage() {
             />
             <Input
               label="تأكيد الباسورد"
+              spellCheck={false}
               type="password"
               autoComplete="new-password"
               error={errors.password_confirm?.message}

@@ -1,6 +1,6 @@
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { TokenChip } from "@/components/ui/TokenChip";
-import { Button } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Seo } from "@/components/common/Seo";
 
@@ -18,9 +18,7 @@ export function NotFoundPage() {
       <p className="max-w-md text-ink-mute">
         الصفحة اللي بتدور عليها مش موجودة، أو الجولة خلصت بالفعل.
       </p>
-      <Link to="/">
-        <Button variant="outline">ارجع لـ قهوة</Button>
-      </Link>
+      <ButtonLink to="/" variant="outline">ارجع لـ قهوة</ButtonLink>
     </PageContainer>
   );
 }

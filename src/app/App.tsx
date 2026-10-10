@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { MotionConfig } from "framer-motion";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ProtectedRoute, PublicOnlyRoute } from "@/routes/ProtectedRoute";
@@ -20,37 +21,54 @@ const NotFoundPage = lazy(() => import("@/pages/NotFoundPage").then((m) => ({ de
 
 export function App() {
   return (
-    <BrowserRouter>
-      <div className="flex min-h-screen flex-col">
-        <Navbar />
-        <main className="flex-1">
-          <Suspense fallback={<Spinner label="Loading…" className="py-24" />}>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
+    <MotionConfig reducedMotion="user">
+      <BrowserRouter>
+        <AppLayout />
+      </BrowserRouter>
+    </MotionConfig>
+  );
+}
 
-              <Route element={<PublicOnlyRoute />}>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-              </Route>
+function AppLayout() {
+  const { pathname } = useLocation();
+  const isLiveMatch = /^\/games\/[^/]+$/.test(pathname);
 
-              {/* Not gated by auth state on purpose — a host could click this
-                  link from an email while already signed in elsewhere. */}
-              <Route path="/verify-email/:uid/:token" element={<VerifyEmailPage />} />
+  return (
+    <div className="flex min-h-screen min-w-0 flex-col">
+      <a
+        href="#main-content"
+        className="sr-only z-50 rounded-md bg-orange px-4 py-3 font-bold text-on-orange focus:not-sr-only focus:fixed focus:start-4 focus:top-4"
+      >
+        انتقل إلى المحتوى
+      </a>
+      {!isLiveMatch && <Navbar />}
+      <main id="main-content" tabIndex={-1} className="min-w-0 flex-1">
+        <Suspense fallback={<Spinner label="بنجهّز قهوة…" className="py-24" />}>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
 
-              <Route element={<ProtectedRoute />}>
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/topics" element={<TopicsPage />} />
-                <Route path="/games/new" element={<NewGamePage />} />
-                <Route path="/games/:sessionId" element={<GamePage />} />
-                <Route path="/games/:sessionId/results" element={<ResultsPage />} />
-              </Route>
+            <Route element={<PublicOnlyRoute />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+            </Route>
 
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </Suspense>
-        </main>
-        <Footer />
-      </div>
-    </BrowserRouter>
+            {/* Not gated by auth state on purpose — a host could click this
+              link from an email while already signed in elsewhere. */}
+            <Route path="/verify-email/:uid/:token" element={<VerifyEmailPage />} />
+
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/topics" element={<TopicsPage />} />
+              <Route path="/games/new" element={<NewGamePage />} />
+              <Route path="/games/:sessionId" element={<GamePage />} />
+              <Route path="/games/:sessionId/results" element={<ResultsPage />} />
+            </Route>
+
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
+      </main>
+      {!isLiveMatch && <Footer />}
+    </div>
   );
 }

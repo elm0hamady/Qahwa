@@ -29,9 +29,10 @@ control.
 - **Axios** - API client with a request interceptor (attaches the JWT) and a response
   interceptor (queues and retries requests through a single in-flight refresh call on 401)
 - **React Hook Form + Zod** - form state and validation
-- **Tailwind CSS v4** - design tokens declared once in `src/index.css` via `@theme`,
-  consumed as generated utility classes (`bg-gold`, `text-violet-soft`, `shadow-glow-gold`, ...)
-- **Framer Motion** - hero/board entrance and hover motion, respects `prefers-reduced-motion`
+- **Tailwind CSS v4** - espresso-dark surfaces with brass and lilac player tokens declared
+  once in `src/index.css` via `@theme`, consumed as generated utility classes
+- **Framer Motion** - state-led question, score, and result motion; respects
+  `prefers-reduced-motion` through the app-level motion configuration
 - **Vitest + Testing Library** - unit/component tests
 
 ## Main pages

@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Check, Search } from "lucide-react";
+import { Check } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
@@ -11,7 +10,6 @@ import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { InlineBanner } from "@/components/common/InlineBanner";
 import { Seo } from "@/components/common/Seo";
-import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { useTopics } from "@/features/topics/hooks";
 import { useCreateSession } from "@/features/sessions/hooks";
 import { normalizeError } from "@/lib/errors";
@@ -53,7 +51,7 @@ export function NewGamePage() {
     setFormError(null);
 
     if (!player1.trim() || !player2.trim()) {
-      setFormError("لازم اسم لكل لاعب.");
+      setFormError("لازم اسم لكل فريق.");
       return;
     }
     if (selected.length !== REQUIRED_TOPICS) {
@@ -74,36 +72,38 @@ export function NewGamePage() {
   return (
     <PageContainer>
       <Seo title="ابدأ لعبة جديدة" path="/games/new" noIndex />
-      <Breadcrumbs items={[{ label: "لوحة التحكم", path: "/dashboard" }, { label: "لعبة جديدة" }]} />
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-        <h1 className="font-display text-3xl font-semibold text-ink text-balance">جهّز الطاولة</h1>
-        <p className="mt-1 text-ink-mute">لاعبين اتنين، أربعة مواضيع. اللوحة هتتظبط لوحدها بعد كده.</p>
-      </motion.div>
-
-      <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-6">
-        <Card className="grid gap-4 p-6 sm:grid-cols-2">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <Card className="grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
           <Input
-            label="اللاعب الأول"
-            placeholder="مثلاً يوسف"
+            label="الفريق الأول"
+            name="player1_name"
+            autoComplete="off"
+            spellCheck={false}
+            placeholder="اسم الفريق الأول"
             value={player1}
             onChange={(e) => setPlayer1(e.target.value)}
             className="focus:border-purple"
           />
           <Input
-            label="اللاعب الثاني"
-            placeholder="مثلاً نور"
+            label="الفريق الثاني"
+            name="player2_name"
+            autoComplete="off"
+            spellCheck={false}
+            placeholder="اسم الفريق الثاني"
             value={player2}
             onChange={(e) => setPlayer2(e.target.value)}
           />
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-5 sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="font-display text-lg font-semibold text-ink">اختار 4 مواضيع</h2>
               <p className="text-sm text-ink-mute">هنا بس المواضيع اللي فيها بنك أسئلة كامل.</p>
             </div>
             <span
+              aria-live="polite"
+              aria-atomic="true"
               className={cn(
                 "self-start rounded-full border px-3 py-1 text-sm font-medium sm:self-auto",
                 selected.length === REQUIRED_TOPICS
@@ -115,13 +115,14 @@ export function NewGamePage() {
             </span>
           </div>
 
-          <div className="relative mt-4">
-            <Search className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-ink-mute" size={16} />
+          <div className="mt-4">
             <Input
+              label="ابحث عن موضوع"
+              name="topic_search"
+              autoComplete="off"
               placeholder="دور على موضوع…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="ps-9"
             />
           </div>
 
@@ -151,15 +152,16 @@ export function NewGamePage() {
                             key={topic.id}
                             disabled={isDisabled}
                             onClick={() => toggleTopic(topic.id)}
+                            aria-pressed={isSelected}
                             className={cn(
-                              "flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm transition-colors",
+                              "flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full border px-4 py-2 text-sm transition-colors",
                               isSelected
                                 ? "border-purple bg-purple/15 text-purple"
                                 : "border-border text-ink-dim hover:border-purple/50 hover:text-ink",
-                              isDisabled && "cursor-not-allowed opacity-40 hover:border-border hover:text-ink-dim"
+                              isDisabled && "cursor-not-allowed opacity-50 hover:border-border hover:text-ink-dim"
                             )}
                           >
-                            {isSelected && <Check size={13} />}
+                            {isSelected && <Check size={13} aria-hidden="true" />}
                             {topic.name}
                           </button>
                         );
@@ -172,9 +174,13 @@ export function NewGamePage() {
           </div>
         </Card>
 
-        {(formError || apiError) && <InlineBanner message={formError ?? apiError!.message} />}
+        {(formError || apiError) && (
+          <div>
+            <InlineBanner message={formError ?? apiError!.message} />
+          </div>
+        )}
 
-        <Button type="submit" size="lg" loading={createSession.isPending} className="self-start">
+        <Button type="submit" size="lg" loading={createSession.isPending} className="w-full sm:w-auto sm:self-start">
           ابدأ المبارزة
         </Button>
       </form>

@@ -16,19 +16,21 @@ export function Footer() {
     <footer className="border-t border-border-soft">
       <div className="flex flex-col gap-6 px-6 py-10 sm:flex-row sm:items-center sm:justify-between md:px-10 lg:px-16">
         <div className="flex flex-col gap-3">
-          <Link to="/" className="flex items-center gap-2 text-ink-dim">
-            <Logo className="h-5 w-5" />
-            <span className="font-display text-base">قهوة</span>
-            <span className="text-sm text-ink-mute">— مبارزات أسئلة، تستضيفها إنت.</span>
-          </Link>
-          <nav aria-label="روابط الفوتر" className="flex gap-4 text-sm text-ink-mute">
-            <Link to="/" className="transition-colors hover:text-purple">
-              الرئيسية
+          <div className="flex flex-col items-start gap-2">
+            <Link to="/" className="flex items-center gap-2 text-ink-dim">
+              <Logo className="h-5 w-5" />
+              <span className="font-display text-base">قهوة</span>
             </Link>
-            <Link to="/login" className="transition-colors hover:text-purple">
-              دخول المضيف
-            </Link>
-          </nav>
+            <p className="text-sm text-ink-mute">أقوى تحدى معلومات</p>
+            <nav aria-label="روابط الفوتر" className="mt-1 flex gap-4 text-sm text-ink-mute">
+              <Link to="/" className="transition-colors hover:text-purple">
+                الرئيسية
+              </Link>
+              <Link to="/login" className="transition-colors hover:text-purple">
+                تسجيل الدخول
+              </Link>
+            </nav>
+          </div>
         </div>
 
         <div className="flex flex-col items-start gap-3 sm:items-end">
@@ -40,9 +42,9 @@ export function Footer() {
                   target={href.startsWith("mailto:") ? undefined : "_blank"}
                   rel={href.startsWith("mailto:") ? undefined : "noreferrer noopener"}
                   aria-label={label}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-ink-mute transition-all duration-200 hover:border-purple hover:text-purple hover:shadow-glow-purple"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-border text-ink-mute transition-[border-color,color,box-shadow] duration-200 hover:border-purple hover:text-purple hover:shadow-glow-purple"
                 >
-                  <Icon size={16} />
+                  <Icon size={16} aria-hidden="true" />
                 </a>
               </li>
             ))}

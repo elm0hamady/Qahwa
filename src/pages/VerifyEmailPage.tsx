@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
-import { Button } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Card } from "@/components/ui/Card";
 import { Spinner } from "@/components/ui/Spinner";
 import { Seo } from "@/components/common/Seo";
@@ -56,35 +56,31 @@ export function VerifyEmailPage() {
           {!isLoading && isError && (
             <>
               <span className="flex h-14 w-14 items-center justify-center rounded-token border-2 border-danger/50 bg-danger/10 text-danger">
-                <XCircle size={26} />
+                <XCircle size={26} aria-hidden="true" />
               </span>
               <h1 className="font-display text-xl font-bold text-ink">رابط التفعيل مش شغال</h1>
               <p className="text-sm text-ink-mute">{normalizeError(error).message}</p>
               <p className="text-xs text-ink-mute">
                 ممكن الرابط يكون انتهى أو اتفتح قبل كده. جرّب تسجّل حساب جديد أو كلّم الدعم.
               </p>
-              <Link to="/register" className="mt-2">
-                <Button variant="outline">ارجع لصفحة التسجيل</Button>
-              </Link>
+              <ButtonLink to="/register" variant="outline" className="mt-2">
+                ارجع لصفحة التسجيل
+              </ButtonLink>
             </>
           )}
 
           {verified && (
             <>
               <span className="flex h-14 w-14 items-center justify-center rounded-token border-2 border-success/50 bg-success/10 text-success">
-                <CheckCircle2 size={26} />
+                <CheckCircle2 size={26} aria-hidden="true" />
               </span>
               <h1 className="font-display text-xl font-bold text-ink">اتفعّل حسابك!</h1>
               <p className="text-sm text-ink-mute">
                 هترجع للصفحة الرئيسية تلقائي خلال {redirectIn}… تقدر كمان تسجّل دخول وتبدأ تستضيف على طول.
               </p>
               <div className="mt-2 flex flex-wrap justify-center gap-2">
-                <Link to="/">
-                  <Button variant="outline">روح دلوقتي</Button>
-                </Link>
-                <Link to="/login">
-                  <Button variant="purple">تسجيل الدخول</Button>
-                </Link>
+                <ButtonLink to="/" variant="outline">روح دلوقتي</ButtonLink>
+                <ButtonLink to="/login">تسجيل الدخول</ButtonLink>
               </div>
             </>
           )}

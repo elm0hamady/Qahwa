@@ -69,13 +69,14 @@ export function LoginPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
           <Input
             label="اسم المستخدم"
+            spellCheck={false}
             autoComplete="username"
-            autoFocus
             error={errors.username?.message}
             {...register("username")}
           />
           <Input
             label="الباسورد"
+            spellCheck={false}
             type="password"
             autoComplete="current-password"
             error={errors.password?.message}

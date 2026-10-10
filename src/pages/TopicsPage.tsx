@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Search } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
@@ -8,7 +7,6 @@ import { Spinner } from "@/components/ui/Spinner";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Seo } from "@/components/common/Seo";
-import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { useTopics } from "@/features/topics/hooks";
 import { getTopicIcon } from "@/features/game/topicIcons";
 import { normalizeError } from "@/lib/errors";
@@ -35,21 +33,15 @@ export function TopicsPage() {
         path="/topics"
         noIndex
       />
-      <Breadcrumbs items={[{ label: "لوحة التحكم", path: "/dashboard" }, { label: "المواضيع" }]} />
-
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-        <h1 className="font-display text-3xl font-bold text-ink text-balance">بنك المواضيع</h1>
-        <p className="mt-1 text-ink-mute">كل المواضيع الجاهزة اللي تقدر تختار منها لما تبدأ لعبة جديدة.</p>
-      </motion.div>
-
-      <Card className="mt-8 p-6">
-        <div className="relative">
-          <Search className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-ink-mute" size={16} />
+      <Card className="p-5 sm:p-6">
+        <div>
           <Input
+            label="ابحث عن موضوع"
+            name="topic_search"
+            autoComplete="off"
             placeholder="دور على موضوع…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="ps-9"
           />
         </div>
 

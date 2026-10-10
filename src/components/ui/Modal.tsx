@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useRef } from "react";
+import { type ReactNode, useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
@@ -31,20 +31,60 @@ export function Modal({
   dismissible = true,
 }: ModalProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
+  const titleId = useId();
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     if (!open) return;
+    const previousFocus = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+    const previousOverflow = document.body.style.overflow;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && dismissible) onClose();
+      if (e.key === "Escape" && dismissible) onCloseRef.current();
+      if (e.key !== "Tab") return;
+
+      const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex="0"]'
+      );
+      if (!focusable?.length) {
+        e.preventDefault();
+        dialogRef.current?.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     document.addEventListener("keydown", onKey);
-    if (dismissible) closeRef.current?.focus();
+    const focusFrame = window.requestAnimationFrame(() => {
+      if (dismissible) closeRef.current?.focus();
+      else dialogRef.current?.focus();
+    });
     document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
+      window.cancelAnimationFrame(focusFrame);
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus?.isConnected && !previousFocus.matches(":disabled")) {
+        previousFocus.focus();
+      } else {
+        document.querySelector<HTMLElement>("#main-content")?.focus();
+      }
     };
-  }, [open, onClose, dismissible]);
+  }, [open, dismissible]);
 
   return createPortal(
     <AnimatePresence>
@@ -57,33 +97,38 @@ export function Modal({
           transition={{ duration: 0.15 }}
         >
           <div
-            className="absolute inset-0 bg-ink/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-scrim/80 backdrop-blur-sm"
+            aria-hidden="true"
             onClick={dismissible ? onClose : undefined}
           />
           <motion.div
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
-            aria-label={title}
+            aria-labelledby={title ? titleId : undefined}
+            aria-label={title ? undefined : "نافذة حوار"}
+            tabIndex={-1}
             initial={{ opacity: 0, y: 24, scale: 0.85 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 340, damping: 26 }}
             className={cn(
-              "relative z-10 max-h-[90vh] w-full overflow-y-auto rounded-card border-2 border-border bg-surface p-6 shadow-card",
+              "relative z-10 max-h-[calc(100dvh-2rem)] w-full overscroll-contain overflow-y-auto rounded-card border-2 border-border bg-surface p-5 shadow-card sm:max-h-[90vh] sm:p-6",
               maxWidthClassName,
               className
             )}
           >
             <div className="mb-4 flex items-start justify-between gap-4">
-              {title && <h2 className="font-display text-xl font-bold text-ink">{title}</h2>}
+              {title && <h2 id={titleId} className="font-display text-xl font-bold text-ink">{title}</h2>}
               {dismissible && (
                 <button
+                  type="button"
                   ref={closeRef}
                   onClick={onClose}
                   aria-label="إغلاق"
-                  className="ms-auto rounded-full p-1.5 text-ink-mute transition-colors hover:bg-surface-hi hover:text-ink"
+                  className="ms-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-ink-mute transition-colors hover:bg-surface-hi hover:text-ink"
                 >
-                  <X size={18} />
+                  <X size={18} aria-hidden="true" />
                 </button>
               )}
             </div>
