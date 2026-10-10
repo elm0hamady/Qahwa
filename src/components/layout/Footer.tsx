@@ -18,8 +18,7 @@ export function Footer() {
         <div className="flex flex-col gap-3">
           <div className="flex flex-col items-start gap-2">
             <Link to="/" className="flex items-center gap-2 text-ink-dim">
-              <Logo className="h-5 w-5" />
-              <span className="font-display text-base">قهوة</span>
+              <Logo className="h-5 w-5 text-orange" wordmark="قهوة" />
             </Link>
             <p className="text-sm text-ink-mute">أقوى تحدى معلومات</p>
             <nav aria-label="روابط الفوتر" className="mt-1 flex gap-4 text-sm text-ink-mute">

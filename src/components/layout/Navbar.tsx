@@ -15,11 +15,8 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-border-soft bg-bg/90 shadow-[0_8px_24px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl">
       <div className="flex w-full items-center justify-between gap-3 px-[clamp(1rem,3vw,3rem)] py-2.5">
-        <Link to="/" className="group flex shrink-0 items-center gap-2.5">
-          <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-orange/25 bg-orange/10 transition-colors group-hover:border-orange/55 group-hover:bg-orange/15">
-            <Logo className="h-7 w-7" />
-          </span>
-          <span className="font-display text-lg font-bold text-ink">قهوة</span>
+        <Link to="/" className="group flex shrink-0 items-center transition-opacity hover:opacity-85">
+          <Logo className="h-10 w-10 text-orange" wordmark="قهوة" />
         </Link>
 
         <nav aria-label="التنقل الرئيسي" className="flex min-w-0 items-center justify-end gap-1 sm:gap-2">

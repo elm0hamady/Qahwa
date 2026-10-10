@@ -1,28 +1,28 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #090c11;
-  --color-bg-soft: #10151d;
-  --color-surface: #171e28;
-  --color-surface-hi: #222c39;
-  --color-border: #3a485a;
-  --color-border-soft: #273341;
+  --color-bg: #0a0d0e;
+  --color-bg-soft: #111617;
+  --color-surface: #181e1f;
+  --color-surface-hi: #242c2c;
+  --color-border: #3c4845;
+  --color-border-soft: #293331;
 
-  --color-ink: #f2f4f5;
-  --color-ink-dim: #c6cdd3;
-  --color-ink-mute: #929da8;
+  --color-ink: #f4efe5;
+  --color-ink-dim: #d1cabc;
+  --color-ink-mute: #a19c91;
 
-  --color-purple: #bd9aff;
-  --color-purple-soft: #d7c3ff;
-  --color-purple-dim: #30253f;
-  --color-on-purple: #1b1227;
-  --color-orange: #f2ad45;
-  --color-orange-soft: #ffc66e;
-  --color-orange-dim: #392715;
-  --color-on-orange: #281a0c;
-  --color-cyan: #74d9ef;
-  --color-cyan-dim: #15333d;
-  --color-scrim: #090706;
+  --color-purple: #c4a6f2;
+  --color-purple-soft: #dfceff;
+  --color-purple-dim: #30263d;
+  --color-on-purple: #1b1424;
+  --color-orange: #e6a94f;
+  --color-orange-soft: #ffd080;
+  --color-orange-dim: #392a18;
+  --color-on-orange: #21170a;
+  --color-cyan: #83d6d6;
+  --color-cyan-dim: #193436;
+  --color-scrim: #080909;
 
   --color-danger: #ff8b82;
   --color-success: #65d6a0;
@@ -34,8 +34,8 @@
   --radius-card: 1.25rem;
   --radius-sm: 0.875rem;
 
-  --shadow-glow-purple: 0 10px 34px -14px rgba(189, 154, 255, 0.52);
-  --shadow-glow-orange: 0 10px 34px -14px rgba(242, 173, 69, 0.46);
+  --shadow-glow-purple: 0 10px 34px -14px rgba(196, 166, 242, 0.42);
+  --shadow-glow-orange: 0 10px 34px -14px rgba(230, 169, 79, 0.4);
   --shadow-card: 0 24px 56px -30px rgba(0, 0, 0, 0.94), 0 1px 0 rgba(255, 255, 255, 0.045) inset;
 }
 
@@ -62,7 +62,7 @@
     z-index: 0;
     background:
       radial-gradient(ellipse at 76% 12%, rgba(75, 44, 110, 0.22), transparent 34%),
-      radial-gradient(ellipse at 4% 48%, rgba(118, 78, 30, 0.11), transparent 28%),
+      radial-gradient(ellipse at 4% 48%, rgba(128, 83, 32, 0.13), transparent 28%),
       linear-gradient(rgba(133, 154, 179, 0.025) 1px, transparent 1px),
       linear-gradient(90deg, rgba(133, 154, 179, 0.025) 1px, transparent 1px);
     background-size: auto, auto, 48px 48px, 48px 48px;
@@ -110,6 +110,22 @@
   ::-webkit-scrollbar-thumb {
     background: var(--color-border);
     border-radius: 999px;
+  }
+}
+
+@layer components {
+  .dashboard-stage {
+    background:
+      radial-gradient(ellipse at 82% 46%, rgba(111, 69, 25, 0.22), transparent 34%),
+      linear-gradient(115deg, var(--color-bg-soft), var(--color-surface) 72%, #20211d);
+  }
+
+  .dashboard-stage-grid {
+    background-image:
+      linear-gradient(rgba(230, 169, 79, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(230, 169, 79, 0.045) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: linear-gradient(90deg, transparent 4%, black 80%);
   }
 }
 
