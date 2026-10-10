@@ -22,18 +22,19 @@ export function TopicCard({ topicName, players, cellMap, onSelectQuestion, openP
   }));
 
   return (
-    <Card className="h-full overflow-hidden border-y border-x-0 border-border-soft bg-surface p-0">
-      <div className="border-b border-border-soft bg-bg-soft px-3 py-3.5 sm:px-4">
-        <h3 className="break-words font-display text-base font-extrabold leading-tight text-ink">{topicName}</h3>
+    <Card className="h-full overflow-hidden rounded-none border-border-soft bg-surface p-0 shadow-card">
+      <div className="relative border-b border-border-soft bg-bg-soft px-3 py-3.5 sm:px-4">
+        <span aria-hidden="true" className="absolute inset-y-0 start-0 w-1 bg-orange/80" />
+        <h3 className="break-words ps-2 font-display text-base font-extrabold leading-tight text-ink">{topicName}</h3>
       </div>
 
       <div className="px-2.5 pb-3 pt-2 sm:px-3">
-        <div className="overflow-hidden border border-border-soft">
+        <div className="overflow-hidden border border-border-soft/80">
           {rows.map(({ difficulty, q1, q2 }, index) => (
             <div
               key={difficulty}
               className={cn(
-                "grid grid-cols-2 items-center gap-2 px-2 py-2 sm:px-2.5",
+                "grid grid-cols-2 items-center gap-2 px-2 py-2.5 sm:px-2.5",
                 index % 2 === 0 ? "bg-surface" : "bg-bg-soft/70",
                 index > 0 && "border-t border-border-soft"
               )}
@@ -103,8 +104,8 @@ function QuestionCell({
         "group flex min-h-12 min-w-0 items-center justify-center border px-1 text-xs font-bold transition-[background-color,border-color,box-shadow,color,opacity] duration-150 disabled:cursor-not-allowed sm:min-h-14",
         selectable
           ? playerIndex === 1
-            ? "border-purple/45 bg-purple-dim/45 text-purple hover:border-purple hover:bg-purple-dim hover:shadow-glow-purple"
-            : "border-orange/45 bg-orange-dim/45 text-orange hover:border-orange hover:bg-orange-dim hover:shadow-glow-orange"
+            ? "border-purple/50 bg-purple-dim/35 text-purple hover:border-purple hover:bg-purple-dim/70 hover:shadow-glow-purple focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple"
+            : "border-orange/50 bg-orange-dim/35 text-orange hover:border-orange hover:bg-orange-dim/70 hover:shadow-glow-orange focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
           : state === "opened"
             ? "border-border bg-surface-hi text-ink-dim opacity-75"
             : "border-border-soft bg-bg text-ink-mute opacity-45"

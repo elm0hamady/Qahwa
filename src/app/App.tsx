@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { MotionConfig } from "framer-motion";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ProtectedRoute, PublicOnlyRoute } from "@/routes/ProtectedRoute";
@@ -30,9 +30,6 @@ export function App() {
 }
 
 function AppLayout() {
-  const { pathname } = useLocation();
-  const isLiveMatch = /^\/games\/[^/]+$/.test(pathname);
-
   return (
     <div className="flex min-h-screen min-w-0 flex-col">
       <a
@@ -41,7 +38,7 @@ function AppLayout() {
       >
         انتقل إلى المحتوى
       </a>
-      {!isLiveMatch && <Navbar />}
+      <Navbar />
       <main id="main-content" tabIndex={-1} className="min-w-0 flex-1">
         <Suspense fallback={<Spinner label="بنجهّز قهوة…" className="py-24" />}>
           <Routes>
@@ -68,7 +65,7 @@ function AppLayout() {
           </Routes>
         </Suspense>
       </main>
-      {!isLiveMatch && <Footer />}
+      <Footer />
     </div>
   );
 }

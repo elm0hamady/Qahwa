@@ -184,7 +184,7 @@ export function GamePage() {
         noIndex
       />
 
-      <div className="px-[clamp(1rem,3vw,3rem)] pt-4 sm:pt-6">
+      <div className="mx-auto w-full max-w-[88rem] px-[clamp(1rem,3vw,3rem)] pt-4 sm:pt-6">
         <ArenaScoreboard
           players={[
             { id: player1.id, name: player1.name, score: player1Score },
@@ -213,7 +213,7 @@ export function GamePage() {
         )}
       </div>
 
-      <div className="flex justify-center px-4 pt-3">
+      <div className="mx-auto flex w-full max-w-[88rem] justify-end px-[clamp(1rem,3vw,3rem)] pt-3">
         <Button
           variant="danger"
           size="sm"
@@ -244,8 +244,8 @@ export function GamePage() {
         </div>
       )}
 
-      <section aria-label="اختيار الأسئلة حسب الموضوع" className="min-w-0 px-[clamp(1rem,3vw,3rem)] py-4 sm:py-5">
-        <div className="grid auto-rows-fr grid-cols-2 gap-3">
+      <section aria-label="اختيار الأسئلة حسب الموضوع" className="mx-auto min-w-0 w-full max-w-[88rem] px-[clamp(1rem,3vw,3rem)] py-4 sm:py-5">
+        <div className="grid auto-rows-fr grid-cols-2 gap-3 sm:gap-4">
           {session.topics.map((topic, i) => (
             <motion.div
               key={topic.id}
@@ -281,6 +281,7 @@ export function GamePage() {
         open={showAbandonConfirm}
         onClose={() => setShowAbandonConfirm(false)}
         title="إلغاء اللعبة؟"
+        className="rounded-none border border-border-soft"
       >
         <div className="flex flex-col gap-4">
           <p className="leading-relaxed text-ink-dim">
@@ -442,6 +443,7 @@ function QuestionModal({
       onClose={onClose}
       title={`${question.topic} · ${question.difficulity} نقطة`}
       maxWidthClassName="max-w-3xl"
+      className="rounded-none border border-border-soft"
       dismissible={false}
     >
       <QuestionModalContent
@@ -601,9 +603,9 @@ function QuestionModalContent({
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border-soft bg-bg-soft px-4 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border border-border-soft bg-bg-soft px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-purple/35 bg-purple-dim text-purple">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center border border-purple/35 bg-purple-dim text-purple">
             <CircleHelp size={19} aria-hidden="true" />
           </span>
           <div className="min-w-0">
@@ -624,7 +626,7 @@ function QuestionModalContent({
 
       <section
         aria-label="نص السؤال"
-        className="relative overflow-hidden rounded-2xl border border-border-soft bg-bg px-5 py-6 sm:px-8 sm:py-9"
+        className="relative overflow-hidden border border-border-soft bg-bg px-5 py-6 sm:px-8 sm:py-9"
       >
         <span aria-hidden="true" className="absolute start-0 top-0 h-full w-1 bg-gradient-to-b from-purple via-orange to-transparent" />
         <p className="mb-3 text-[11px] font-bold text-orange">السؤال</p>
@@ -693,7 +695,7 @@ function QuestionModalContent({
             stiffness: 380,
             damping: 22,
           }}
-          className="rounded-2xl border border-orange/45 bg-orange-dim/60 px-4 py-4 sm:px-5"
+          className="border border-orange/45 bg-orange-dim/60 px-4 py-4 sm:px-5"
         >
           <p className="flex items-center gap-2 text-xs font-bold text-orange">
             <Check size={14} aria-hidden="true" />
@@ -717,7 +719,7 @@ function QuestionModalContent({
       )}
 
       {canJudge && (
-        <section aria-labelledby="judge-question-title" className="rounded-2xl border border-border-soft bg-surface p-4 sm:p-5">
+        <section aria-labelledby="judge-question-title" className="border border-border-soft bg-surface p-4 sm:p-5">
           <div className="mb-4">
             <p className="text-xs font-bold text-success">الإجابة اتكشفت</p>
             <h3 id="judge-question-title" className="mt-1 font-display text-lg font-bold text-ink">

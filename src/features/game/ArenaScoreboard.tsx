@@ -24,9 +24,9 @@ export function ArenaScoreboard({ players, onAdjust, adjusting }: ArenaScoreboar
   return (
     <section
       aria-label="نتيجة المبارزة"
-      className="relative overflow-hidden border-y border-border bg-surface shadow-card"
+      className="relative overflow-hidden border border-border-soft bg-surface shadow-card"
     >
-      <div className="flex items-center justify-between gap-3 border-b border-border-soft bg-bg-soft px-4 py-3">
+      <div className="flex items-center justify-between gap-3 border-b border-border-soft bg-bg-soft px-4 py-3.5">
         <div className="flex items-center gap-2.5">
           <span className="relative flex h-2.5 w-2.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-30 motion-reduce:animate-none" />
@@ -83,7 +83,7 @@ function PlayerScorePanel({
   return (
     <div
       className={cn(
-        "relative flex min-h-[8.5rem] min-w-0 flex-col justify-between gap-2 overflow-hidden border px-2.5 py-3 transition-colors sm:min-h-28 sm:flex-row sm:items-center sm:gap-3 sm:px-4",
+        "relative flex min-h-[8.5rem] min-w-0 flex-col justify-between gap-2 overflow-hidden border px-3 py-3.5 transition-colors sm:min-h-28 sm:flex-row sm:items-center sm:gap-3 sm:px-4",
         tone === "purple"
           ? leading ? "border-purple/75 bg-purple-dim/45" : "border-purple/35 bg-bg-soft"
           : leading ? "border-orange/75 bg-orange-dim/45" : "border-orange/35 bg-bg-soft"
@@ -132,7 +132,7 @@ function PlayerScorePanel({
             aria-label={`نقص 100 من ${player.name}`}
             whileHover={adjusting ? undefined : { y: -2 }}
             whileTap={adjusting ? undefined : { scale: 0.92 }}
-            className="flex h-9 w-9 items-center justify-center border border-border bg-surface text-ink-mute transition-colors hover:border-danger hover:text-danger disabled:cursor-not-allowed disabled:opacity-45 sm:h-11 sm:w-11"
+            className="flex h-11 w-11 items-center justify-center border border-border bg-surface text-ink-mute transition-colors hover:border-danger hover:text-danger disabled:cursor-not-allowed disabled:opacity-45"
           >
             <Minus size={15} aria-hidden="true" />
           </motion.button>
@@ -143,7 +143,7 @@ function PlayerScorePanel({
             aria-label={`زود 100 لـ ${player.name}`}
             whileHover={adjusting ? undefined : { y: -2 }}
             whileTap={adjusting ? undefined : { scale: 0.92 }}
-            className="flex h-9 w-9 items-center justify-center border border-border bg-surface text-ink-mute transition-colors hover:border-success hover:text-success disabled:cursor-not-allowed disabled:opacity-45 sm:h-11 sm:w-11"
+            className="flex h-11 w-11 items-center justify-center border border-border bg-surface text-ink-mute transition-colors hover:border-success hover:text-success disabled:cursor-not-allowed disabled:opacity-45"
           >
             <Plus size={15} aria-hidden="true" />
           </motion.button>
